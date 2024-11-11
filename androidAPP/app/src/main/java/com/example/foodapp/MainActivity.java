@@ -29,8 +29,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         // 通知按钮
-        ImageButton helpButton = findViewById(R.id.informButton);  // 通知按钮
-        helpButton.setOnClickListener(new View.OnClickListener() {  // 通知按钮
+        ImageButton informButton = findViewById(R.id.informButton);  // 通知按钮
+        informButton.setOnClickListener(new View.OnClickListener() {  // 通知按钮
             @Override
             public void onClick(View v) {  // 点击时调用
                 //startActivity(new Intent(MainActivity.this, InformActivity.class));  // 启动informActivity
