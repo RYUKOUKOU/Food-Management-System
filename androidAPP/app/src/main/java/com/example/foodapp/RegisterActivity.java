@@ -1,6 +1,5 @@
 package com.example.foodapp;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -12,37 +11,37 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class LoginActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 
-    private static final String TAG = "LoginActivity";
+    private static final String TAG = "RegisterActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login_activity);
+        setContentView(R.layout.register_activity);
 
-        EditText usernameEditText = findViewById(R.id.loginUsername);
-        EditText passwordEditText = findViewById(R.id.loginPassword);
-        Button loginButton = findViewById(R.id.loginButton);
+        EditText usernameEditText = findViewById(R.id.registerUsername);
+        EditText passwordEditText = findViewById(R.id.registerPassword);
+        Button registerButton = findViewById(R.id.registerButton);
 
-        loginButton.setOnClickListener(v -> {
+        registerButton.setOnClickListener(v -> {
             String username = usernameEditText.getText().toString().trim();
             String password = passwordEditText.getText().toString().trim();
 
             if (!username.isEmpty() && !password.isEmpty()) {
-                loginUser(username, password);
+                registerUser(username, password);
             } else {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void loginUser(String username, String password) {
+    private void registerUser(String username, String password) {
         new Thread(() -> {
             HttpURLConnection connection = null;
 
             try {
-                URL url = new URL("http://10.0.2.2:8000/api/login");
+                URL url = new URL("http://10.0.2.2:8000/api/register");
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("POST");
                 connection.setRequestProperty("Content-Type", "application/json");
@@ -57,21 +56,16 @@ public class LoginActivity extends AppCompatActivity {
                 int responseCode = connection.getResponseCode();
                 Log.d(TAG, "Response Code: " + responseCode);
 
-                if (responseCode == 200) {
-                    runOnUiThread(() -> {
-                        Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish(); // 关闭当前活动
-                    });
-                } else if (responseCode == 401) {
-                    runOnUiThread(() -> Toast.makeText(this, "Invalid Credentials", Toast.LENGTH_SHORT).show());
+                if (responseCode == 201) {
+                    runOnUiThread(() -> Toast.makeText(this, "Registration Successful", Toast.LENGTH_SHORT).show());
+                } else if (responseCode == 409) {
+                    runOnUiThread(() -> Toast.makeText(this, "Username already exists", Toast.LENGTH_SHORT).show());
                 } else {
-                    runOnUiThread(() -> Toast.makeText(this, "Login Failed: Code " + responseCode, Toast.LENGTH_SHORT).show());
+                    runOnUiThread(() -> Toast.makeText(this, "Registration Failed: Code " + responseCode, Toast.LENGTH_SHORT).show());
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Error during login", e);
-                runOnUiThread(() -> Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT).show());
+                Log.e(TAG, "Error occurred during registration", e);
+                runOnUiThread(() -> Toast.makeText(this, "Error occurred", Toast.LENGTH_SHORT).show());
             } finally {
                 if (connection != null) {
                     connection.disconnect();

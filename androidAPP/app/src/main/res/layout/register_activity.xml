@@ -5,21 +5,21 @@
     android:padding="16dp">
 
     <EditText
-        android:id="@+id/loginUsername"
+        android:id="@+id/registerUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Username" />
 
     <EditText
-        android:id="@+id/loginPassword"
+        android:id="@+id/registerPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Password"
         android:inputType="textPassword" />
 
     <Button
-        android:id="@+id/loginButton"
+        android:id="@+id/registerButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login" />
+        android:text="Register" />
 </LinearLayout>
