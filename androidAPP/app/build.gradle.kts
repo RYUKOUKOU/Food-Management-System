@@ -31,16 +31,19 @@ android {
     }
 }
 
+
 dependencies {
 
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.recyclerview)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
     implementation("net.objecthunter:exp4j:0.4.8")
     implementation ("com.google.android.material:material:1.5.0")
+    implementation ("androidx.appcompat:appcompat:1.6.1")
 }

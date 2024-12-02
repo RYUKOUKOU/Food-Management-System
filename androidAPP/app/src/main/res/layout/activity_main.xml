@@ -12,21 +12,23 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
         <!-- Help button -->
-        <ImageButton
-            android:id="@+id/informButton"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:src="@drawable/inform_image"
-            android:background="@drawable/login_background"
-            android:scaleType="centerInside"
-            android:contentDescription="Help"
-            android:layout_gravity="start" />
 
-        <!-- Login button -->
-        <ImageButton
+    <!-- Login button -->
+
+    <ImageButton
+        android:id="@+id/informButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="start"
+        android:background="@drawable/login_background"
+        android:contentDescription="Help"
+        android:scaleType="centerInside"
+        android:src="@drawable/inform_image" />
+
+    <ImageButton
             android:id="@+id/loginButton"
             android:layout_width="60dp"
             android:layout_height="60dp"
@@ -35,7 +37,7 @@
             android:scaleType="centerInside"
             android:contentDescription="Login"
             android:layout_gravity="end" />
-    </androidx.appcompat.widget.Toolbar>
+
 
     <!-- RecyclerView for scrollable list -->
     <androidx.recyclerview.widget.RecyclerView
@@ -43,7 +45,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_below="@id/toolbar"
-        android:layout_above="@id/bottom_navigation" />
+        android:layout_above="@id/bottom_navigation"
+        tools:ignore="MissingClass" />
 
     <!-- Bottom Navigation Bar -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -51,6 +54,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        app:menu="@menu/menu_main" />
+        app:menu="@menu/menu_main"
+        tools:ignore="MissingClass" />
 
 </RelativeLayout>
