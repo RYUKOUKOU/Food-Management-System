@@ -3,15 +3,10 @@ from flask_socketio import SocketIO
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 
-<<<<<<< HEAD
 
-# Initialize the Flask app
-app = Flask(__name__)
-=======
 # 初始化 Flask 和 SocketIO
 main = Flask(__name__)
 socketio = SocketIO(main)
->>>>>>> 6eeec87fa610e4726dbdb3e1536f57a1b914aae0
 
 # 数据库初始化
 def init_db():
