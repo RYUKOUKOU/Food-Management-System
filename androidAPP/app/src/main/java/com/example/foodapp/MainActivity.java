@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    // 检查是否有相机和写入存储的权限
+    // 相机部分函数
     public void checkPermissions() {
         // 检查是否有相机权限
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
