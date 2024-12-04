@@ -24,6 +24,7 @@ import java.util.Scanner;
 
 public class MainActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 String requestBody = ""; // 用于传递给 API 的数据
 
                 if (itemId == R.id.nav_input) {
+                    InputFood.openCamera();
                     myData.add(new MyItem("Item 1", R.drawable.login_background));
                     return true;
                 } else if (itemId == R.id.nav_output) {
