@@ -6,6 +6,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 
+import android.graphics.Bitmap;
+import android.util.Base64;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,13 +17,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
 public class MainActivity extends AppCompatActivity {
 
 
@@ -83,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 通信部分函数
-    public void communicationApi(String requestBody) {
+    public void communicationApi(String requestBody, Bitmap imageBitmap) {
         new Thread(() -> {
             String apiUrl = "http://10.0.2.2:8000/api/update_message"; // Flask 服务器地址
             HttpURLConnection connection = null;
@@ -97,10 +99,25 @@ public class MainActivity extends AppCompatActivity {
                 connection.setRequestMethod("POST");
                 connection.setRequestProperty("Content-Type", "application/json");
 
+                // 构建 JSON 请求体
+                JSONObject requestJson = new JSONObject();
+                requestJson.put("message", requestBody);
+
+                // 如果图片不为空，则将其编码为 Base64，并添加到 JSON 中
+                if (imageBitmap != null) {
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream); // 压缩图片为 PNG 格式
+                    byte[] imageBytes = outputStream.toByteArray();
+                    String base64Image = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+                    requestJson.put("image", base64Image); // 添加 Base64 图片数据到请求体
+                } else {
+                    requestJson.put("image", JSONObject.NULL); // 如果图片为空，发送 null
+                }
+
                 // 启用输出流，发送 POST 请求体
                 connection.setDoOutput(true);
                 try (OutputStream os = connection.getOutputStream()) {
-                    os.write(requestBody.getBytes());
+                    os.write(requestJson.toString().getBytes());
                     os.flush();
                 }
 

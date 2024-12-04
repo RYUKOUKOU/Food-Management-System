@@ -46,4 +46,5 @@ dependencies {
     implementation("net.objecthunter:exp4j:0.4.8")
     implementation ("com.google.android.material:material:1.5.0")
     implementation ("androidx.appcompat:appcompat:1.6.1")
+    implementation("org.springframework.boot:spring-boot-starter-web")
 }
