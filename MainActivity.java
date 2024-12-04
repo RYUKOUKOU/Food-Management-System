@@ -1,57 +1,94 @@
-import android.content.Context;
-import android.view.LayoutInflater;
+package com.example.textapp;
+
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.os.Build;
+import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-import java.util.List;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
-public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.MyViewHolder> {
+public class MainActivity extends AppCompatActivity {
 
-    private List<MyItem> itemList;
-    private Context context;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int PERMISSIONS_REQUEST_CODE = 100;
 
-    public MyImageTextAdapter(List<MyItem> itemList, Context context) {
-        this.itemList = itemList;
-        this.context = context;
-    }
-
-    @NonNull
-    @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
-        return new MyViewHolder(view);
-    }
+    private ImageView imageView;
+    private Button btnTakePicture;
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        MyItem item = itemList.get(position);
-        holder.textView.setText(item.getText());
-        holder.imageView.setImageResource(item.getImageResId());
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        // 设置点击事件
-        holder.itemView.setOnClickListener(v -> {
-            // 处理点击事件，比如启动新活动或显示信息
-            // 例如：
-            // Toast.makeText(context, "Clicked: " + item.getText(), Toast.LENGTH_SHORT).show();
+        imageView = findViewById(R.id.imgCapturedImage);
+        btnTakePicture = findViewById(R.id.btnTakePicture);
+
+        btnTakePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkPermissions(); // 检查权限
+            }
         });
     }
 
-    @Override
-    public int getItemCount() {
-        return itemList.size();
+    // 检查是否有相机和写入存储的权限
+    private void checkPermissions() {
+        // 检查是否有相机权限
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSIONS_REQUEST_CODE);
+        }
+        // 检查是否有写入外部存储的权限（适配 Android 10 及以上版本）
+        else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_CODE);
+        } else {
+            // 如果权限已经被授予，启动拍照功能
+            dispatchTakePictureIntent();
+        }
     }
 
-    static class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView textView;
-        ImageView imageView;
+    // 处理权限请求的回调
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSIONS_REQUEST_CODE) {
+            boolean cameraPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+            boolean storagePermissionGranted = grantResults.length > 1 && grantResults[1] == PackageManager.PERMISSION_GRANTED;
 
-        MyViewHolder(View itemView) {
-            super(itemView);
-            textView = itemView.findViewById(R.id.item_text);
-            imageView = itemView.findViewById(R.id.item_image);
+            if (cameraPermissionGranted && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || storagePermissionGranted)) {
+                // 权限授予，启动拍照功能
+                dispatchTakePictureIntent();
+            } else {
+                // 权限被拒绝，提示用户
+                Toast.makeText(this, "权限被拒绝，无法拍照", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    // 启动相机拍照意图
+    @SuppressLint("QueryPermissionsNeeded")
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+    }
+
+    // 处理拍照后的结果
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            // 获取返回的图片并设置到ImageView
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            imageView.setImageBitmap(imageBitmap);
         }
     }
 }

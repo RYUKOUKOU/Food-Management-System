@@ -1,85 +1,94 @@
 package com.example.foodapp;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+public class MainActivity extends AppCompatActivity {
 
-public class InputFood {
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int PERMISSIONS_REQUEST_CODE = 100;
 
-    private static final int REQUEST_TAKE_PHOTO = 1;
-    private static String currentPhotoPath;
-    @SuppressLint("StaticFieldLeak")
-    private static Context context;
+    private ImageView imageView;
+    private Button btnTakePicture;
 
-    // 构造函数
-    public InputFood(Context context) {
-        if (context == null) {
-            throw new IllegalArgumentException("Context cannot be null");
-        }
-        InputFood.context = context;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        imageView = findViewById(R.id.imgCapturedImage);
+        btnTakePicture = findViewById(R.id.btnTakePicture);
+
+        btnTakePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkPermissions(); // 检查权限
+            }
+        });
     }
 
-    // 启动相机
+    // 检查是否有相机和写入存储的权限
+    private void checkPermissions() {
+        // 检查是否有相机权限
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSIONS_REQUEST_CODE);
+        }
+        // 检查是否有写入外部存储的权限（适配 Android 10 及以上版本）
+        else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_CODE);
+        } else {
+            // 如果权限已经被授予，启动拍照功能
+            dispatchTakePictureIntent();
+        }
+    }
+
+    // 处理权限请求的回调
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSIONS_REQUEST_CODE) {
+            boolean cameraPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+            boolean storagePermissionGranted = grantResults.length > 1 && grantResults[1] == PackageManager.PERMISSION_GRANTED;
+
+            if (cameraPermissionGranted && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || storagePermissionGranted)) {
+                // 权限授予，启动拍照功能
+                dispatchTakePictureIntent();
+            } else {
+                // 权限被拒绝，提示用户
+                Toast.makeText(this, "权限被拒绝，无法拍照", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    // 启动相机拍照意图
     @SuppressLint("QueryPermissionsNeeded")
-    public static void openCamera() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (intent.resolveActivity(context.getPackageManager()) != null) {
-            File photoFile = null;
-            try {
-                photoFile = createImageFile(); // 创建图片文件
-            } catch (IOException ex) {
-                Log.e("Camera", "Error creating image file", ex);
-            }
-
-            // 如果文件创建成功，则启动相机
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(context,
-                        "com.your package.file provider", photoFile); // 使用 FileProvider 获取 URI
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI); // 设置拍照后保存图片的位置
-                ((AppCompatActivity) context).startActivityForResult(intent, REQUEST_TAKE_PHOTO); // 启动相机
-            }
-        }
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
     }
 
-    // 创建用于保存照片的文件
-    private static File createImageFile() throws IOException {
-        @SuppressLint("SimpleDateFormat") String imageFileName = "JPEG_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + "_";
-        File storageDir = context.getExternalFilesDir(null); // 获取外部存储目录
-        File image = File.createTempFile(
-                imageFileName,  /* 文件名前缀 */
-                ".jpg",         /* 文件扩展名 */
-                storageDir      /* 存储位置 */
-        );
-
-        currentPhotoPath = image.getAbsolutePath(); // 获取文件路径
-        return image;
-    }
-
-    // 获取图片路径
-    public String getCurrentPhotoPath() {
-        return currentPhotoPath;
-    }
-
-    // 处理相机返回结果的函数
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == AppCompatActivity.RESULT_OK) {
-            // 读取并显示拍摄的照片
-            Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath); // 读取图片文件
-            // imageView.setImageBitmap(bitmap); // 可以显示到 ImageView 中
-            // 处理拍照后的图片
+    // 处理拍照后的结果
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            // 获取返回的图片并设置到ImageView
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            imageView.setImageBitmap(imageBitmap);
         }
     }
 }
-
