@@ -23,7 +23,7 @@ public class ApiCommunication {
             connection.setRequestProperty("Content-Type", "application/json");
 
             // 启用输出流，发送 POST 请求体
-            connection.setDoOutput(true);s
+            connection.setDoOutput(true);
             try (OutputStream os = connection.getOutputStream()) {
                 os.write(requestBody.getBytes());
                 os.flush();
