@@ -11,7 +11,7 @@ public class MySample {
         String apiUrl = "http://127.0.0.1:8000/api/update_message";
         
         // 请求体（我们将发送一个 ID 和图片文件）
-        String requestBodyJson = "{\"id\": 101}";
+        String requestBodyJson = "{\"id\": 101 ,\"message\": \"Hello, World!\"}";
 
         // 图片文件路径
         String imagePath = "C:/Users/User/Documents/GitHub/Food-Management-System/homepage/20241127103532.png";

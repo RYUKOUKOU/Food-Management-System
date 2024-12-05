@@ -48,4 +48,5 @@ def return_message(id):
 
 
 if __name__ == '__main__':
+    Args=Args.Args()
     socketio.run(main, host='127.0.0.1', port=8000,debug=True)

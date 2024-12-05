@@ -1,5 +1,6 @@
 import os
 class Args:
-    path = os.path.dirname(os.path.abspath(__file__))
-    model_dir = os.path.join(path, "models")
-    model =['best.pt','last.pt']
+    def __init__(self):
+        self.path = os.path.dirname(os.path.abspath(__file__))
+        self.model_dir = os.path.join(self.path, "models")
+        self.model =['best.pt','last.pt']
