@@ -1,30 +1,62 @@
 from flask import Flask, request, jsonify
-import os
+import sqlite3
+from werkzeug.security import generate_password_hash, check_password_hash
 
-# 初始化 Flask 应用
 app = Flask(__name__)
 
-# 配置上传文件的存储路径
-UPLOAD_FOLDER = 'uploads/'
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+# 数据库初始化
+def init_db():
+    with sqlite3.connect("users.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL UNIQUE,
+                password TEXT NOT NULL
+            )
+        ''')
+        conn.commit()
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# 注册接口
+@app.route('/api/register', methods=['POST'])
+def register():
+    data = request.json
+    username = data.get("username")
+    password = data.get("password")
 
-# 上传图片接口，保存图片并返回图片名称
-@app.route('/api/update_message', methods=['POST'])
-def update_message():
-    message = request.form.get('message')  # 获取消息文本
-    image = request.files.get('image')  # 获取图片文件
+    if not username or not password:
+        return jsonify({"message": "Username and password are required"}), 400
 
-    if image:
-        image_name = image.filename  # 获取图片的文件名
-        image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_name))  # 保存图片到服务器
+    hashed_password = generate_password_hash(password)
+    try:
+        with sqlite3.connect("users.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
+            conn.commit()
+        return jsonify({"message": "User registered successfully"}), 201
+    except sqlite3.IntegrityError:
+        return jsonify({"message": "Username already exists"}), 409
 
-        # 返回成功响应
-        return jsonify({"status": "success", "message": f"Received image: {image_name}"}), 200
-    else:
-        return jsonify({"status": "error", "message": "No image provided"}), 400
+# 登录接口
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.json
+    username = data.get("username")
+    password = data.get("password")
+
+    if not username or not password:
+        return jsonify({"message": "Username and password are required"}), 400
+
+    with sqlite3.connect("users.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT password FROM users WHERE username = ?", (username,))
+        user = cursor.fetchone()
+
+        if user and check_password_hash(user[0], password):
+            return jsonify({"message": "Login successful"}), 200
+        else:
+            return jsonify({"message": "Invalid credentials"}), 401
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    init_db()
+    app.run(host='0.0.0.0', port=8000)
