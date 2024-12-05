@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 import json
 import Args
 import os   
+import ImagePredict
 
 # 初始化 Flask 和 SocketIO
 main = Flask(__name__)
@@ -26,19 +27,16 @@ def update_message():
 
     # 解析 JSON 数据
     data_dict = json.loads(data)
-    room_id = data_dict.get('id')  # 获取 JSON 中的 'id'
+    service_id = data_dict.get('id')  # 获取 JSON 中的 'id'
+    message = data_dict.get('message')  # 获取 JSON 中的'message'
+
+    if service_id == 'update_img':
+        file = request.files.get('file')
+        if file:
+            ImagePredict.predict(global model,file)
+        else:
+            return jsonify({"error": "No file provided"}), 400
     
-    # 获取上传的文件
-    file = request.files.get('file')
-    if file:
-        # 如果需要，可以保存文件或进一步处理
-        filename = file.filename  # 获取文件名
-        file_path = os.path.join(Args.path, filename)
-        file.save(file_path)  # 保存文件到服务器
-    else:
-        return jsonify({"error": "No file provided"}), 400
-    
-    return jsonify("success"), 200
 
 
 # 处理从客户端（Java）发送的消息
@@ -49,4 +47,5 @@ def return_message(id):
 
 if __name__ == '__main__':
     Args=Args.Args()
+    global model = ImagePredict.predict_init(Args,x=0)
     socketio.run(main, host='127.0.0.1', port=8000,debug=True)
