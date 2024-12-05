@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,15 +23,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import org.json.JSONObject;
-
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.UUID;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -100,35 +100,35 @@ public class MainActivity extends AppCompatActivity {
         new Thread(() -> {
             String apiUrl = "http://10.0.2.2:8000/api/update_message"; // Flask 服务器地址
             HttpURLConnection connection = null;
+            String boundary = "----WebKitFormBoundary" + UUID.randomUUID().toString().replaceAll("-", "");
 
             try {
                 // 创建 URL 对象
                 URL url = new URL(apiUrl);
                 connection = (HttpURLConnection) url.openConnection();
 
-                // 设置请求方法为 POST
+                // 设置请求方法和请求头
                 connection.setRequestMethod("POST");
-                connection.setRequestProperty("Content-Type", "application/json");
-
-                // 构建 JSON 请求体
-                JSONObject requestJson = new JSONObject();
-                requestJson.put("message", requestBody);
-
-                // 如果图片不为空，则将其编码为 Base64，并添加到 JSON 中
-                if (imageBitmap != null) {
-                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream); // 压缩图片为 PNG 格式
-                    byte[] imageBytes = outputStream.toByteArray();
-                    String base64Image = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-                    requestJson.put("image", base64Image); // 添加 Base64 图片数据到请求体
-                } else {
-                    requestJson.put("image", JSONObject.NULL); // 如果图片为空，发送 null
-                }
-
-                // 启用输出流，发送 POST 请求体
+                connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
                 connection.setDoOutput(true);
+
                 try (OutputStream os = connection.getOutputStream()) {
-                    os.write(requestJson.toString().getBytes());
+                    // 写入 JSON 数据部分
+                    writeFormData(os, "data", "application/json", requestBody.getBytes(), boundary);
+
+                    // 写入图片部分
+                    if (imageBitmap != null) {
+                        // 将 Bitmap 压缩为字节数组
+                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                        imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                        byte[] imageBytes = outputStream.toByteArray();
+
+                        // 写入图片为表单文件
+                        writeFormFile(os, "file", "image.png", "image/png", imageBytes, boundary);
+                    }
+
+                    // 写入结束边界
+                    os.write(("--" + boundary + "--\r\n").getBytes());
                     os.flush();
                 }
 
@@ -148,13 +148,6 @@ public class MainActivity extends AppCompatActivity {
                     if (responseCode >= 200 && responseCode < 300) {
                         String responseString = response.toString();
                         Log.d("API Response", "Response: " + responseString);
-
-                        // 假设服务器返回 JSON 格式数据，解析并提取 operator
-                        JSONObject jsonResponse = new JSONObject(responseString);
-                        String operator = jsonResponse.getString("operator");
-
-                        // 根据 operator 调用不同的函数
-                        handleOperator(operator);
                     } else {
                         Log.e("API Error", "Error Response: " + response);
                     }
@@ -168,6 +161,29 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
     }
+
+    /**
+     * 写入表单数据部分
+     */
+    private void writeFormData(OutputStream os, String name, String contentType, byte[] data, String boundary) throws IOException {
+        os.write(("--" + boundary + "\r\n").getBytes());
+        os.write(("Content-Disposition: form-data; name=\"" + name + "\"\r\n").getBytes());
+        os.write(("Content-Type: " + contentType + "\r\n\r\n").getBytes());
+        os.write(data);
+        os.write("\r\n".getBytes());
+    }
+
+    /**
+     * 写入表单文件部分
+     */
+    private void writeFormFile(OutputStream os, String name, String fileName, String contentType, byte[] fileData, String boundary) throws IOException {
+        os.write(("--" + boundary + "\r\n").getBytes());
+        os.write(("Content-Disposition: form-data; name=\"" + name + "\"; filename=\"" + fileName + "\"\r\n").getBytes());
+        os.write(("Content-Type: " + contentType + "\r\n\r\n").getBytes());
+        os.write(fileData);
+        os.write("\r\n".getBytes());
+    }
+
     //通信部分函数
 
     // 根据 operator 来调用不同的函数
