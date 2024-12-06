@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -26,6 +27,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
@@ -36,15 +38,13 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
-import io.socket.client.IO;
+//import io.socket.client.IO;
 import io.socket.client.Socket;
 
 
 public class MainActivity extends AppCompatActivity {
     private static final String SOCKET_URL = "http://127.0.0.1:8000";
     private static final String API_URL = SOCKET_URL + "/api/update_message";
-    private Socket mSocket;
-    private static final String SERVER_URL = "http://10.0.2.2:8000";
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int PERMISSIONS_REQUEST_CODE = 100;
 
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //startActivity(new Intent(MainActivity.this, LoginActivity.class));
                 myData.add(new MyItem("Item R", R.drawable.login_background));
-                    communicationApi("101", null, null);
+                new API("101", null, null).execute();
 
             }
         });
@@ -114,8 +114,8 @@ public class MainActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 // 创建 Socket 连接
-                Socket socket = IO.socket(SOCKET_URL);
-
+                //Socket socket = IO.socket(SOCKET_URL);
+                Socket socket = null;
                 // 监听服务器返回的消息
                 socket.on("return_message", args -> {
                     JSONObject message = (JSONObject) args[0];
@@ -142,71 +142,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
     }
-    public static void communicationApi(String service_id, String message, File imageFile) {
-        String requestBodyJson = "{\"id\":\"" + service_id + "\", \"message\":\"" + (message != null ? message : "") + "\"}";
-        String boundary = "----WebKitFormBoundary" + UUID.randomUUID().toString().replaceAll("-", "");
-        try {
-            // 创建 HTTP 连接
-            URL url = new URL("http://10.0.2.2:8000/api/update_message");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-            connection.setDoOutput(true);
 
-            // 写入请求体数据
-            try (OutputStream os = connection.getOutputStream()) {
-                // 写入 JSON 数据部分
-                os.write(("--" + boundary + "\r\n").getBytes());
-                os.write("Content-Disposition: form-data; name=\"data\"\r\n".getBytes());
-                os.write("Content-Type: application/json\r\n\r\n".getBytes());
-                os.write(requestBodyJson.getBytes());
-                os.write("\r\n".getBytes());
-
-                // 写入图片文件部分
-                if (imageFile != null && imageFile.exists()) {
-                    os.write(("--" + boundary + "\r\n").getBytes());
-                    os.write(("Content-Disposition: form-data; name=\"file\"; filename=\"" + imageFile.getName() + "\"\r\n").getBytes());
-                    os.write("Content-Type: image/jpeg\r\n\r\n".getBytes());
-
-                    // 使用 FileInputStream 读取文件
-                    try (FileInputStream fis = new FileInputStream(imageFile)) {
-                        byte[] buffer = new byte[4096];
-                        int bytesRead;
-                        while ((bytesRead = fis.read(buffer)) != -1) {
-                            os.write(buffer, 0, bytesRead);
-                        }
-                    }
-                    os.write("\r\n".getBytes());
-                }
-
-                // 写入结束边界
-                os.write(("--" + boundary + "--\r\n").getBytes());
-                os.flush();
-            }
-
-            // 获取响应代码
-            int responseCode = connection.getResponseCode();
-            System.out.println("Response Code: " + responseCode);
-
-            // 读取响应内容
-            try (Scanner scanner = new Scanner(
-                    responseCode >= 200 && responseCode < 300
-                            ? connection.getInputStream()
-                            : connection.getErrorStream())) {
-                StringBuilder response = new StringBuilder();
-                while (scanner.hasNext()) {
-                    response.append(scanner.nextLine());
-                }
-                if (responseCode >= 200 && responseCode < 300) {
-                    System.out.println("Response: " + response);
-                } else {
-                    System.err.println("Error Response: " + response);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
 
     //通信部分函数
