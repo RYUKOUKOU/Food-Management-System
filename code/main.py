@@ -50,5 +50,5 @@ def return_message(id, message):
 
 if __name__ == '__main__':
     Args=Args.Args()
-    model = ImagePredict.predict_init(Args,x=0)
-    socketio.run(main, host='127.0.0.1', port=8000,debug=True)
+    #model = ImagePredict.predict_init(Args,x=0)
+    socketio.run(main, host='127.0.0.1', port=8000)
