@@ -4,6 +4,7 @@ class Args:
         self.path = os.path.dirname(os.path.abspath(__file__))
         self.model_dir = os.path.join(self.path, "models")
         self.model =['best.pt','last.pt']
+        self.confidence_threshold = 0.1
 
 #选择通信时的操作码
 # update_img. 上传图片并识别图片中的食物名称
