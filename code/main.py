@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 import json
 import Args
 import os   
-import ImagePredict
+#import ImagePredict
 
 # 初始化 Flask 和 SocketIO
 main = Flask(__name__)
@@ -22,32 +22,35 @@ def index():
 # 接收来自 Java 端的请求
 @main.route('/api/update_message', methods=['POST'])
 def update_message():
-
-    data = request.form.get('data')  # 获取表单字段中的 JSON 数据
+    data = request.form.get('data')
     if not data:
         return jsonify({"error": "No data provided"}), 400
-
     # 解析 JSON 数据
     data_dict = json.loads(data)
-    service_id = data_dict.get('id')  # 获取 JSON 中的 'id'
-    message = data_dict.get('message')  # 获取 JSON 中的'message'
-
+    service_id = data_dict.get('id')
+    message = data_dict.get('message')
+    #具体处理接收到的信息
     if service_id == 'update_img':
         file = request.files.get('file')
         if file:
-            ImagePredict.predict(model,file)
+            #json_data = json.dumps(ImagePredict.return_food_info(ImagePredict.predict(model,file)))
+            json_data = "1"
+            #return_message('return_food', json_data)
+            return jsonify({"id": "return_food", "message": "2"}), 200
         else:
             return jsonify({"error": "No file provided"}), 400
+    return jsonify({"id": "return_food", "message": "1"}), 200
+        
     
 
 # 处理从客户端（Java）发送的消息
 @socketio.on('return_message')
 def return_message(id, message):
-    emit('return_message', {'message': message})
+    emit('return_message', {'id': id,'message': message})
 
 
 
 if __name__ == '__main__':
     Args=Args.Args()
-    model = ImagePredict.predict_init(Args,x=0)
-    socketio.run(main, host='127.0.0.1', port=8000,debug=True)
+    #model = ImagePredict.predict_init(Args,x=0)
+    socketio.run(main, host='0.0.0.0', port=8000)

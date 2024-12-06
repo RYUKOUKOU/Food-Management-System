@@ -24,6 +24,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -32,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
+
 import io.socket.client.Socket;
 
 public class MainActivity extends AppCompatActivity {
@@ -44,12 +47,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        try {
-            mSocket = IO.socket(SERVER_URL);
-        } catch (URISyntaxException e) {
-            Log.e("SocketIO", "Socket.IO 初始化失败: " + e.getMessage());
-            return;
-        }
+
 
         // 设置 RecyclerView
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
@@ -93,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.nav_output) {
                     myData.add(new MyItem("Item 2", R.drawable.login_background));
+                    communicationApi("101", null, null);
                     return true;
                 } else if (itemId == R.id.nav_suggestion) { myData.add(new MyItem("Item 3", R.drawable.login_background));
                     return true;
@@ -104,70 +103,81 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 通信部分函数
-    public void communicationApi(String requestBody, Bitmap imageBitmap) {
-        new Thread(() -> {
-            String apiUrl = "http://10.0.2.2:8000/api/update_message"; // Flask 服务器地址
-            HttpURLConnection connection = null;
-            String boundary = "----WebKitFormBoundary" + UUID.randomUUID().toString().replaceAll("-", "");
+    public static void communicationApi(String service_id, String message, File imageFile){
+        // Flask 服务的 API 路由
+        String apiUrl = "http://127.0.0.1:8000/api/update_message";
 
-            try {
-                // 创建 URL 对象
-                URL url = new URL(apiUrl);
-                connection = (HttpURLConnection) url.openConnection();
+        // 请求体 JSON 数据
+        String requestBodyJson = "{\"id\":" + service_id + ", \"message\":\"" + message + "\"}";
 
-                // 设置请求方法和请求头
-                connection.setRequestMethod("POST");
-                connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-                connection.setDoOutput(true);
+        // Boundary 用于分隔表单数据部分
+        String boundary = "----WebKitFormBoundary" + UUID.randomUUID().toString().replaceAll("-", "");
+        try {
+            // 创建 HTTP 连接
+            URL url = new URL(apiUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-                try (OutputStream os = connection.getOutputStream()) {
-                    // 写入 JSON 数据部分
-                    writeFormData(os, "data", "application/json", requestBody.getBytes(), boundary);
+            // 设置请求方法和头部信息
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+            connection.setDoOutput(true);
 
-                    // 写入图片部分
-                    if (imageBitmap != null) {
-                        // 将 Bitmap 压缩为字节数组
-                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                        imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                        byte[] imageBytes = outputStream.toByteArray();
+            // 写入请求体数据
+            try (OutputStream os = connection.getOutputStream()) {
+                // 写入 JSON 数据部分
+                os.write(("--" + boundary + "\r\n").getBytes());
+                os.write("Content-Disposition: form-data; name=\"data\"\r\n".getBytes());
+                os.write("Content-Type: application/json\r\n\r\n".getBytes());
+                os.write(requestBodyJson.getBytes());
+                os.write("\r\n".getBytes());
 
-                        // 写入图片为表单文件
-                        writeFormFile(os, "file", "image.png", "image/png", imageBytes, boundary);
+
+                // 写入图片文件部分
+                if(imageFile != null){
+                    os.write(("--" + boundary + "\r\n").getBytes());
+                    os.write("Content-Disposition: form-data; name=\"file\"; filename=\"image.jpg\"\r\n".getBytes());
+                    os.write("Content-Type: image/jpeg\r\n\r\n".getBytes());
+
+                    FileInputStream fis = new FileInputStream(imageFile);
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    byte[] buf = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = fis.read(buf)) != -1) {
+                        bos.write(buf, 0, bytesRead);
                     }
+                    fis.close();
+                    byte[] imageBytes = bos.toByteArray();
 
-                    // 写入结束边界
-                    os.write(("--" + boundary + "--\r\n").getBytes());
-                    os.flush();
+                    os.write(imageBytes);
+                    os.write("\r\n".getBytes());
                 }
+                // 写入结束边界
+                os.write(("--" + boundary + "--\r\n").getBytes());
+                os.flush();
+            }
 
-                // 获取响应代码
-                int responseCode = connection.getResponseCode();
-                Log.d("API Response", "Response Code: " + responseCode);
+            // 获取响应代码
+            int responseCode = connection.getResponseCode();
+            System.out.println("Response Code: " + responseCode);
 
-                // 读取响应数据
-                try (Scanner scanner = new Scanner(
-                        responseCode >= 200 && responseCode < 300
-                                ? connection.getInputStream()
-                                : connection.getErrorStream())) {
-                    StringBuilder response = new StringBuilder();
-                    while (scanner.hasNext()) {
-                        response.append(scanner.nextLine());
-                    }
-                    if (responseCode >= 200 && responseCode < 300) {
-                        String responseString = response.toString();
-                        Log.d("API Response", "Response: " + responseString);
-                    } else {
-                        Log.e("API Error", "Error Response: " + response);
-                    }
+            // 读取响应内容
+            try (Scanner scanner = new Scanner(
+                    responseCode >= 200 && responseCode < 300
+                            ? connection.getInputStream()
+                            : connection.getErrorStream())) {
+                StringBuilder response = new StringBuilder();
+                while (scanner.hasNext()) {
+                    response.append(scanner.nextLine());
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (connection != null) {
-                    connection.disconnect();
+                if (responseCode >= 200 && responseCode < 300) {
+                    System.out.println("Response: " + response);
+                } else {
+                    System.err.println("Error Response: " + response);
                 }
             }
-        }).start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
