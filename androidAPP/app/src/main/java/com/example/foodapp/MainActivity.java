@@ -23,10 +23,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.io.ByteArrayOutputStream;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -35,9 +36,13 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
+import io.socket.client.IO;
 import io.socket.client.Socket;
 
+
 public class MainActivity extends AppCompatActivity {
+    private static final String SOCKET_URL = "http://127.0.0.1:8000";
+    private static final String API_URL = SOCKET_URL + "/api/update_message";
     private Socket mSocket;
     private static final String SERVER_URL = "http://10.0.2.2:8000";
     private static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -74,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //startActivity(new Intent(MainActivity.this, LoginActivity.class));
                 myData.add(new MyItem("Item R", R.drawable.login_background));
+                    communicationApi("101", null, null);
+
             }
         });
 
@@ -91,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.nav_output) {
                     myData.add(new MyItem("Item 2", R.drawable.login_background));
-                    communicationApi("101", null, null);
+
                     return true;
                 } else if (itemId == R.id.nav_suggestion) { myData.add(new MyItem("Item 3", R.drawable.login_background));
                     return true;
@@ -103,21 +110,45 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 通信部分函数
-    public static void communicationApi(String service_id, String message, File imageFile){
-        // Flask 服务的 API 路由
-        String apiUrl = "http://127.0.0.1:8000/api/update_message";
+    private void startSocketCommunication() {
+        new Thread(() -> {
+            try {
+                // 创建 Socket 连接
+                Socket socket = IO.socket(SOCKET_URL);
 
-        // 请求体 JSON 数据
-        String requestBodyJson = "{\"id\":" + service_id + ", \"message\":\"" + message + "\"}";
+                // 监听服务器返回的消息
+                socket.on("return_message", args -> {
+                    JSONObject message = (JSONObject) args[0];
+                    try {
+                        System.out.println("收到来自服务器的消息: " + message.getString("message"));
+                        List<MyItem> myData = new ArrayList<>();
+                            myData.add(new MyItem("102", R.drawable.login_background));
 
-        // Boundary 用于分隔表单数据部分
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+                // 连接服务器
+                socket.connect();
+                System.out.println("Socket 已连接到服务器: " + SOCKET_URL);
+
+                // 保持连接，防止线程退出
+                while (true) {
+                    Thread.sleep(1000);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+    public static void communicationApi(String service_id, String message, File imageFile) {
+        String requestBodyJson = "{\"id\":\"" + service_id + "\", \"message\":\"" + (message != null ? message : "") + "\"}";
         String boundary = "----WebKitFormBoundary" + UUID.randomUUID().toString().replaceAll("-", "");
         try {
             // 创建 HTTP 连接
-            URL url = new URL(apiUrl);
+            URL url = new URL("http://10.0.2.2:8000/api/update_message");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            // 设置请求方法和头部信息
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
             connection.setDoOutput(true);
@@ -131,26 +162,23 @@ public class MainActivity extends AppCompatActivity {
                 os.write(requestBodyJson.getBytes());
                 os.write("\r\n".getBytes());
 
-
                 // 写入图片文件部分
-                if(imageFile != null){
+                if (imageFile != null && imageFile.exists()) {
                     os.write(("--" + boundary + "\r\n").getBytes());
-                    os.write("Content-Disposition: form-data; name=\"file\"; filename=\"image.jpg\"\r\n".getBytes());
+                    os.write(("Content-Disposition: form-data; name=\"file\"; filename=\"" + imageFile.getName() + "\"\r\n").getBytes());
                     os.write("Content-Type: image/jpeg\r\n\r\n".getBytes());
 
-                    FileInputStream fis = new FileInputStream(imageFile);
-                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                    byte[] buf = new byte[1024];
-                    int bytesRead;
-                    while ((bytesRead = fis.read(buf)) != -1) {
-                        bos.write(buf, 0, bytesRead);
+                    // 使用 FileInputStream 读取文件
+                    try (FileInputStream fis = new FileInputStream(imageFile)) {
+                        byte[] buffer = new byte[4096];
+                        int bytesRead;
+                        while ((bytesRead = fis.read(buffer)) != -1) {
+                            os.write(buffer, 0, bytesRead);
+                        }
                     }
-                    fis.close();
-                    byte[] imageBytes = bos.toByteArray();
-
-                    os.write(imageBytes);
                     os.write("\r\n".getBytes());
                 }
+
                 // 写入结束边界
                 os.write(("--" + boundary + "--\r\n").getBytes());
                 os.flush();
@@ -180,27 +208,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * 写入表单数据部分
-     */
-    private void writeFormData(OutputStream os, String name, String contentType, byte[] data, String boundary) throws IOException {
-        os.write(("--" + boundary + "\r\n").getBytes());
-        os.write(("Content-Disposition: form-data; name=\"" + name + "\"\r\n").getBytes());
-        os.write(("Content-Type: " + contentType + "\r\n\r\n").getBytes());
-        os.write(data);
-        os.write("\r\n".getBytes());
-    }
-
-    /**
-     * 写入表单文件部分
-     */
-    private void writeFormFile(OutputStream os, String name, String fileName, String contentType, byte[] fileData, String boundary) throws IOException {
-        os.write(("--" + boundary + "\r\n").getBytes());
-        os.write(("Content-Disposition: form-data; name=\"" + name + "\"; filename=\"" + fileName + "\"\r\n").getBytes());
-        os.write(("Content-Type: " + contentType + "\r\n\r\n").getBytes());
-        os.write(fileData);
-        os.write("\r\n".getBytes());
-    }
 
     //通信部分函数
 
