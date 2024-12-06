@@ -39,6 +39,9 @@ def update_message():
             return jsonify({"id": "return_food", "message": "2"}), 200
         else:
             return jsonify({"error": "No file provided"}), 400
+    else:
+        sleep(5) 
+        return_message("101","102")
     return jsonify({"id": "return_food", "message": "1"}), 200
         
     
