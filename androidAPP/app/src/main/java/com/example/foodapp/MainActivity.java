@@ -32,9 +32,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
+import io.socket.client.Socket;
 
 public class MainActivity extends AppCompatActivity {
-
+    private Socket mSocket;
+    private static final String SERVER_URL = "http://10.0.2.2:8000";
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int PERMISSIONS_REQUEST_CODE = 100;
 
@@ -42,6 +44,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        try {
+            mSocket = IO.socket(SERVER_URL);
+        } catch (URISyntaxException e) {
+            Log.e("SocketIO", "Socket.IO 初始化失败: " + e.getMessage());
+            return;
+        }
 
         // 设置 RecyclerView
         RecyclerView recyclerView = findViewById(R.id.recyclerView);

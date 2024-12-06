@@ -40,7 +40,6 @@ def update_message():
             return jsonify({"error": "No file provided"}), 400
     
 
-
 # 处理从客户端（Java）发送的消息
 @socketio.on('return_message')
 def return_message(id, message):
