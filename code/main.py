@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 import json
 import Args
 import os   
+import time
 #import ImagePredict
 
 # 初始化 Flask 和 SocketIO
@@ -40,8 +41,8 @@ def update_message():
         else:
             return jsonify({"error": "No file provided"}), 400
     else:
-        sleep(5) 
-        return_message("101","102")
+        time.sleep(5)  # 修复 asyncio.sleep
+        socketio.emit('return_message', {'id': "101", 'message': "102"}, namespace='/')  # 修复 emit 调用
     return jsonify({"id": "return_food", "message": "1"}), 200
         
     
