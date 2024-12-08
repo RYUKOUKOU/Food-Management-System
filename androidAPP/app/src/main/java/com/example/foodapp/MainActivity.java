@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.nav_output) {
                     myData.add(new MyItem("Item 2", R.drawable.login_background));
-                    new API("update_img", null, null).execute();
+                    new API("101", null, null).execute();
 
                     return true;
                 } else if (itemId == R.id.nav_suggestion) {
