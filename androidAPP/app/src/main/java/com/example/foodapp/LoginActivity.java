@@ -1,5 +1,7 @@
 package com.example.foodapp;
 
+import static com.example.foodapp.MainActivity.API_URL;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -64,5 +66,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void loginUser( String username, String password,String serverAddress) {
     MainActivity.Server_url = serverAddress;
+    System.out.println(API_URL);
+    new API("101", null, null).execute();
     }
 }
