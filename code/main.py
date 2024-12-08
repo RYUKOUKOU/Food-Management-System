@@ -40,15 +40,14 @@ def update_message():
             return jsonify({"id": "return_food", "message": "2"}), 200
         else:
             return jsonify({"error": "No file provided"}), 400
-    else:
+    elif service_id == '101':
         time.sleep(5)  # 修复 asyncio.sleep
-        return_message("101","102")
-          # 修复 emit 调用
+
     return jsonify({"id": "return_food", "message": "1"}), 200
         
     
 
-# 处理从客户端（Java）发送的消息
+# 暂时弃用
 @socketio.on('return_message')
 def return_message(id, message):
     socketio.emit('return_message', {'id':id, 'message': message}, namespace='/')
