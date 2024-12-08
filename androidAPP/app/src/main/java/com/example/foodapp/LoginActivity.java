@@ -23,21 +23,23 @@ public class LoginActivity extends AppCompatActivity {
 
         EditText usernameEditText = findViewById(R.id.loginUsername);
         EditText passwordEditText = findViewById(R.id.loginPassword);
+        EditText serverAddressEditText = findViewById(R.id.serverAddress);
         Button loginButton = findViewById(R.id.loginButton);
 
         loginButton.setOnClickListener(v -> {
             String username = usernameEditText.getText().toString().trim();
             String password = passwordEditText.getText().toString().trim();
+            String serverAddress = serverAddressEditText.getText().toString().trim();
 
-            if (!username.isEmpty() && !password.isEmpty()) {
-                loginUser(username, password);
-            } else {
+            if (!serverAddress.isEmpty() && !username.isEmpty() && !password.isEmpty()) {
+                loginUser( username, password,serverAddress); // 将服务器地址传递给 loginUser 方法
+            }  else {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void loginUser(String username, String password) {
+    private void loginUser(String s, String username, String password) {
         new Thread(() -> {
             HttpURLConnection connection = null;
 

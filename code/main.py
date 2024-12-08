@@ -42,7 +42,8 @@ def update_message():
             return jsonify({"error": "No file provided"}), 400
     else:
         time.sleep(5)  # 修复 asyncio.sleep
-        socketio.emit('return_message', {'id': "101", 'message': "102"}, namespace='/')  # 修复 emit 调用
+        return_message("101","102")
+          # 修复 emit 调用
     return jsonify({"id": "return_food", "message": "1"}), 200
         
     
@@ -50,7 +51,7 @@ def update_message():
 # 处理从客户端（Java）发送的消息
 @socketio.on('return_message')
 def return_message(id, message):
-    emit('return_message', {'id': id,'message': message})
+    socketio.emit('return_message', {'id': "101", 'message': "102"}, namespace='/')
 
 
 
