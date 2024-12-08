@@ -40,6 +40,7 @@ public class LoginActivity extends AppCompatActivity {
         homeButton.setOnClickListener(new View.OnClickListener() {  // 主页面按钮点击监听器
             @Override
             public void onClick(View v) {  // 点击时调用
+                System.out.println("点击");
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);  // 创建意图跳转到 MainActivity
                 startActivity(intent);  // 启动 MainActivity
                 finish();  // 结束当前 Activity
