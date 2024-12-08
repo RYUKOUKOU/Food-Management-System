@@ -3,7 +3,6 @@ package com.example.foodapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,6 +19,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.view.Menu;
+import android.view.MenuItem;
+
 public class LoginActivity extends AppCompatActivity {
 
 
@@ -35,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
                 //startActivity(new Intent(MainActivity.this, InformActivity.class));  // 启动informActivity
             }
         });
-
+        //
         ImageButton homeButton = findViewById(R.id.action_home);  // 主页面按钮
         homeButton.setOnClickListener(new View.OnClickListener() {  // 主页面按钮点击监听器
             @Override
@@ -99,10 +101,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (responseCode == 200) {
                     runOnUiThread(() -> {
                         Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
-
-                        // 登录成功后传递 serverAddress 到 MainActivity
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        intent.putExtra("SERVER_ADDRESS", serverAddress);  // 将服务器地址传递给 MainActivity
                         startActivity(intent);
                         finish(); // 关闭当前活动
                     });
