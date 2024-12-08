@@ -51,7 +51,7 @@ def update_message():
 # 处理从客户端（Java）发送的消息
 @socketio.on('return_message')
 def return_message(id, message):
-    socketio.emit('return_message', {'id':"return_food", 'message': "3"}, namespace='/')
+    socketio.emit('return_message', {'id':id, 'message': message}, namespace='/')
 
 
 
