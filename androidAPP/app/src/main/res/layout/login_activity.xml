@@ -4,6 +4,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+
     <EditText
         android:id="@+id/loginUsername"
         android:layout_width="match_parent"
@@ -16,6 +17,12 @@
         android:layout_height="wrap_content"
         android:hint="Password"
         android:inputType="textPassword" />
+    <EditText
+        android:id="@+id/loginServerUrl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter server address"
+        android:inputType="text" />
 
     <Button
         android:id="@+id/loginButton"
