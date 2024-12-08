@@ -20,24 +20,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import java.util.UUID;
-
-import io.socket.client.Socket;
-
 
 
 public class MainActivity extends AppCompatActivity {
@@ -77,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //startActivity(new Intent(MainActivity.this, LoginActivity.class));
                 myData.add(new MyItem("Item R", R.drawable.login_background));
-                new API("101", null, null).execute();
+                setContentView(R.layout.login_activity);
 
             }
         });
@@ -96,9 +81,11 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.nav_output) {
                     myData.add(new MyItem("Item 2", R.drawable.login_background));
+                    new API("update_img", null, null).execute();
 
                     return true;
-                } else if (itemId == R.id.nav_suggestion) { myData.add(new MyItem("Item 3", R.drawable.login_background));
+                } else if (itemId == R.id.nav_suggestion) {
+                    myData.add(new MyItem("Item 3", R.drawable.login_background));
                     return true;
                 }
                 return false;
@@ -106,148 +93,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-    // 通信部分函数
-    private void startSocketCommunication() {
-        new Thread(() -> {
-            try {
-                // 创建 Socket 连接
-                //Socket socket = IO.socket(SOCKET_URL);
-                Socket socket = null;
-                // 监听服务器返回的消息
-                socket.on("return_message", args -> {
-                    JSONObject message = (JSONObject) args[0];
-                    try {
-                        System.out.println("收到来自服务器的消息: " + message.getString("message"));
-                        List<MyItem> myData = new ArrayList<>();
-                            myData.add(new MyItem("102", R.drawable.login_background));
-
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-
-                // 连接服务器
-                socket.connect();
-                System.out.println("Socket 已连接到服务器: " + SOCKET_URL);
-
-                // 保持连接，防止线程退出
-                while (true) {
-                    Thread.sleep(1000);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
-    }
-
-
-
-    //通信部分函数
-    protected String doInBackground(Void... voids) {
-        String serviceId = "exampleServiceId";
-        String message = "exampleMessage";
-        String requestBodyJson = "{\"id\":\"" + serviceId + "\", \"message\":\"" + (message != null ? message : "") + "\"}";
-        String boundary = "----WebKitFormBoundary" + UUID.randomUUID().toString().replaceAll("-", "");
-        try {
-            // 创建 HTTP 连接
-            URL url = new URL("http://10.0.2.2:8000/api/update_message");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-            connection.setDoOutput(true);
-
-            // 写入请求体数据
-            try (OutputStream os = connection.getOutputStream()) {
-                // 写入 JSON 数据部分
-                os.write(("--" + boundary + "\r\n").getBytes());
-                os.write("Content-Disposition: form-data; name=\"data\"\r\n".getBytes());
-                os.write("Content-Type: application/json\r\n\r\n".getBytes());
-                os.write(requestBodyJson.getBytes());
-                os.write("\r\n".getBytes());
-
-                // 写入图片文件部分
-                File imageFile = new File("temp_image.jpg");
-                if (imageFile != null && imageFile.exists()) {
-                    os.write(("--" + boundary + "\r\n").getBytes());
-                    os.write(("Content-Disposition: form-data; name=\"file\"; filename=\"" + imageFile.getName() + "\"\r\n").getBytes());
-                    os.write("Content-Type: image/jpeg\r\n\r\n".getBytes());
-
-                    try (FileInputStream fis = new FileInputStream(imageFile)) {
-                        byte[] buffer = new byte[4096];
-                        int bytesRead;
-                        while ((bytesRead = fis.read(buffer)) != -1) {
-                            os.write(buffer, 0, bytesRead);
-                        }
-                    }
-                    os.write("\r\n".getBytes());
-                }
-
-
-                // 写入结束边界
-                os.write(("--" + boundary + "--\r\n").getBytes());
-                os.flush();
-            }
-
-            // 获取响应代码
-            int responseCode = connection.getResponseCode();
-            System.out.println("Response Code: " + responseCode);
-
-            // 读取响应内容
-            try (Scanner scanner = new Scanner(
-                    responseCode >= 200 && responseCode < 300
-                            ? connection.getInputStream()
-                            : connection.getErrorStream())) {
-                StringBuilder response = new StringBuilder();
-                while (scanner.hasNext()) {
-                    response.append(scanner.nextLine());
-                }
-                return responseCode >= 200 && responseCode < 300 ? response.toString() : "Error: " + response;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Exception: " + e.getMessage();
-        }
-    }
-    // 根据 operator 来调用不同的函数
-    private void handleOperator(String operator) {
-        switch (operator) {
-            case "1":
-                functionOne();
-                break;
-            case "2":
-                functionTwo();
-                break;
-            case "3":
-                functionThree();
-                break;
-            default:
-                defaultFunction();
-                break;
-        }
-    }
-
-    // 示例函数
-    private void functionOne() {
-        Log.d("Function", "Function 1 executed");
-        // 这里可以执行对应的逻辑
-    }
-
-    private void functionTwo() {
-        Log.d("Function", "Function 2 executed");
-        // 这里可以执行对应的逻辑
-    }
-
-    private void functionThree() {
-        Log.d("Function", "Function 3 executed");
-        // 这里可以执行对应的逻辑
-    }
-
-    private void defaultFunction() {
-        Log.d("Function", "Default function executed");
-        // 默认操作
-    }
-
 
     // 相机部分函数
     public void checkPermissions() {
