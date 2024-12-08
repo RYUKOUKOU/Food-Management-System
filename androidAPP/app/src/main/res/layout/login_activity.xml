@@ -21,15 +21,16 @@
         android:contentDescription="Help"
         android:layout_gravity="start" />
 
-        <ImageButton
-            android:id="@+id/action_home"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:src="@drawable/login_image"
-            android:background="@drawable/login_background"
-            android:scaleType="centerInside"
-            android:contentDescription="home"
-            android:layout_gravity="end" />
+
+    <ImageButton
+        android:id="@+id/action_home"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/login_image"
+        android:background="@drawable/login_background"
+        android:scaleType="centerInside"
+        android:contentDescription="home"
+        android:layout_gravity="end" />
     </androidx.appcompat.widget.Toolbar>
 
     <EditText
