@@ -3,6 +3,7 @@ package com.example.foodapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,9 +19,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import android.view.Menu;
-import android.view.MenuItem;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -76,10 +74,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
-        return true;
-    }
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_home) {
             // Navigate to MainActivity
@@ -113,7 +107,10 @@ public class LoginActivity extends AppCompatActivity {
                 if (responseCode == 200) {
                     runOnUiThread(() -> {
                         Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
+
+                        // 登录成功后传递 serverAddress 到 MainActivity
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.putExtra("SERVER_ADDRESS", serverAddress);  // 将服务器地址传递给 MainActivity
                         startActivity(intent);
                         finish(); // 关闭当前活动
                     });

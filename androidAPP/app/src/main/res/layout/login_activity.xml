@@ -25,8 +25,8 @@
             android:id="@+id/action_home"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:src="@drawable/home_image"
-            android:background="@drawable/home_background"
+            android:src="@drawable/login_image"
+            android:background="@drawable/login_background"
             android:scaleType="centerInside"
             android:contentDescription="home"
             android:layout_gravity="end" />
