@@ -3,22 +3,59 @@ package com.example.foodapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import android.view.Menu;
+import android.view.MenuItem;
 
 public class LoginActivity extends AppCompatActivity {
+
 
     private static final String TAG = "LoginActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // 设置 RecyclerView
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        List<MyItem> myData = new ArrayList<>();
+        myData.add(new MyItem("base", R.drawable.login_background));
+        MyImageTextAdapter myAdapter = new MyImageTextAdapter(myData, this);
+        recyclerView.setAdapter(myAdapter);
+
+        // 通知按钮
+        ImageButton informButton = findViewById(R.id.informButton);  // 通知按钮
+        informButton.setOnClickListener(new View.OnClickListener() {  // 通知按钮
+            @Override
+            public void onClick(View v) {  // 点击时调用
+                //startActivity(new Intent(MainActivity.this, InformActivity.class));  // 启动informActivity
+                myData.add(new MyItem("Item L", R.drawable.login_background));
+            }
+        });
+
+        ImageButton homeButton = findViewById(R.id.action_home);  // 主页面按钮
+        homeButton.setOnClickListener(new View.OnClickListener() {  // 主页面按钮点击监听器
+            @Override
+            public void onClick(View v) {  // 点击时调用
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);  // 创建意图跳转到 MainActivity
+                startActivity(intent);  // 启动 MainActivity
+                finish();  // 结束当前 Activity
+            }
+        });
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
 
@@ -39,7 +76,20 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
+        return true;
+    }
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_home) {
+            // Navigate to MainActivity
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
     private void loginUser( String username, String password,String serverAddress) {
         new Thread(() -> {
             HttpURLConnection connection = null;
