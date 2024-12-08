@@ -1,5 +1,7 @@
 package com.example.foodapp;
 
+import static com.example.foodapp.MainActivity.API_URL;
+
 import android.os.AsyncTask;
 
 import java.io.File;
@@ -29,7 +31,7 @@ public class API extends AsyncTask<Void, Void, String> {
         String response = null;
         try {
             // 创建 HTTP 连接
-            URL url = new URL("http://10.0.2.2:8000/api/update_message");
+            URL url = new URL(API_URL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);

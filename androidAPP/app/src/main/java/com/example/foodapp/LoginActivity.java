@@ -63,45 +63,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginUser( String username, String password,String serverAddress) {
-        new Thread(() -> {
-            HttpURLConnection connection = null;
-
-            try {
-                URL url = new URL("http://" + serverAddress + "/api/login");
-                connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("POST");
-                connection.setRequestProperty("Content-Type", "application/json");
-                connection.setDoOutput(true);
-
-                String requestBody = String.format("{\"username\":\"%s\",\"password\":\"%s\"}", username, password);
-                try (OutputStream os = connection.getOutputStream()) {
-                    os.write(requestBody.getBytes());
-                    os.flush();
-                }
-
-                int responseCode = connection.getResponseCode();
-                Log.d(TAG, "Response Code: " + responseCode);
-
-                if (responseCode == 200) {
-                    runOnUiThread(() -> {
-                        Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish(); // 关闭当前活动
-                    });
-                } else if (responseCode == 401) {
-                    runOnUiThread(() -> Toast.makeText(this, "Invalid Credentials", Toast.LENGTH_SHORT).show());
-                } else {
-                    runOnUiThread(() -> Toast.makeText(this, "Login Failed: Code " + responseCode, Toast.LENGTH_SHORT).show());
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error during login", e);
-                runOnUiThread(() -> Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT).show());
-            } finally {
-                if (connection != null) {
-                    connection.disconnect();
-                }
-            }
-        }).start();
+    MainActivity.Server_url = serverAddress;
     }
 }

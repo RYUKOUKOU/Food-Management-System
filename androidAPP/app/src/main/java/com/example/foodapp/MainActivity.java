@@ -26,8 +26,8 @@ import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static final String SOCKET_URL = "http://127.0.0.1:8000";
-    private static final String API_URL = SOCKET_URL + "/api/update_message";
+    public static String Server_url = null;
+    public static String API_URL = "http://"+ Server_url + "/api/update_message";
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int PERMISSIONS_REQUEST_CODE = 100;
 
