@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.OutputStream;
@@ -39,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void loginUser(String s, String username, String password) {
+    private void loginUser( String username, String password,String serverAddress) {
         new Thread(() -> {
             HttpURLConnection connection = null;
 
