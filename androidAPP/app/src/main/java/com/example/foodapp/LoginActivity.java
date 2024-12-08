@@ -29,21 +29,12 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // 设置 RecyclerView
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        List<MyItem> myData = new ArrayList<>();
-        myData.add(new MyItem("base", R.drawable.login_background));
-        MyImageTextAdapter myAdapter = new MyImageTextAdapter(myData, this);
-        recyclerView.setAdapter(myAdapter);
-
         // 通知按钮
         ImageButton informButton = findViewById(R.id.informButton);  // 通知按钮
         informButton.setOnClickListener(new View.OnClickListener() {  // 通知按钮
             @Override
             public void onClick(View v) {  // 点击时调用
                 //startActivity(new Intent(MainActivity.this, InformActivity.class));  // 启动informActivity
-                myData.add(new MyItem("Item L", R.drawable.login_background));
             }
         });
         //
