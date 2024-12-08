@@ -21,35 +21,39 @@
         android:contentDescription="Help"
         android:layout_gravity="start" />
 
-        <ImageButton
-            android:id="@+id/action_home"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:src="@drawable/login_image"
-            android:background="@drawable/login_background"
-            android:scaleType="centerInside"
-            android:contentDescription="home"
-            android:layout_gravity="end" />
+    <ImageButton
+        android:id="@+id/action_home"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/login_image"
+        android:background="@drawable/login_background"
+        android:scaleType="centerInside"
+        android:contentDescription="home"
+        android:layout_gravity="end" />
     </androidx.appcompat.widget.Toolbar>
 
     <EditText
         android:id="@+id/loginUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Username" />
+        android:hint="Username"
+        android:minHeight="48dp" />
 
     <EditText
         android:id="@+id/loginPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Password"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:minHeight="48dp" />
+
     <EditText
         android:id="@+id/serverAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter server address"
-        android:inputType="textUri" />
+        android:inputType="textUri"
+        android:minHeight="48dp" />
 
     <Button
         android:id="@+id/loginButton"

@@ -32,6 +32,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".LoginActivity">
+            <!-- 可以在这里定义 LoginActivity 的启动方式 -->
+        </activity>
+
     </application>
 
 </manifest>

@@ -29,27 +29,25 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // 通知按钮
-        ImageButton informButton = findViewById(R.id.informButton);  // 通知按钮
-        informButton.setOnClickListener(new View.OnClickListener() {  // 通知按钮
-            @Override
-            public void onClick(View v) {  // 点击时调用
-                //startActivity(new Intent(MainActivity.this, InformActivity.class));  // 启动informActivity
-            }
-        });
-        //
-        ImageButton homeButton = findViewById(R.id.action_home);  // 主页面按钮
-        homeButton.setOnClickListener(new View.OnClickListener() {  // 主页面按钮点击监听器
-            @Override
-            public void onClick(View v) {  // 点击时调用
-                System.out.println("点击");
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);  // 创建意图跳转到 MainActivity
-                startActivity(intent);  // 启动 MainActivity
-                finish();  // 结束当前 Activity
-            }
-        });
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
+        
+        // 通知按钮
+        ImageButton homeButton = findViewById(R.id.action_home);  // 获取 homeButton
+        if (homeButton != null) {
+            homeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        } else {
+            System.out.println("找不到按钮");
+            Log.e("LoginActivity", "homeButton is null!");
+        }
+
 
         EditText usernameEditText = findViewById(R.id.loginUsername);
         EditText passwordEditText = findViewById(R.id.loginPassword);
@@ -62,21 +60,11 @@ public class LoginActivity extends AppCompatActivity {
             String serverAddress = serverAddressEditText.getText().toString().trim();
 
             if (!serverAddress.isEmpty() && !username.isEmpty() && !password.isEmpty()) {
-                loginUser( username, password,serverAddress); // 将服务器地址传递给 loginUser 方法
+                //loginUser( username, password,serverAddress); // 将服务器地址传递给 loginUser 方法
             }  else {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             }
         });
-    }
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_home) {
-            // Navigate to MainActivity
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
     private void loginUser( String username, String password,String serverAddress) {
         new Thread(() -> {
