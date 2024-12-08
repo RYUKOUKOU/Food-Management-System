@@ -24,6 +24,7 @@ def index():
 @main.route('/api/update_message', methods=['POST'])
 def update_message():
     data = request.form.get('data')
+    print(f"Received data: {data}")
     if not data:
         return jsonify({"error": "No data provided"}), 400
     # 解析 JSON 数据
@@ -37,13 +38,14 @@ def update_message():
             #json_data = json.dumps(ImagePredict.return_food_info(ImagePredict.predict(model,file)))
             json_data = "1"
             #return_message('return_food', json_data)
-            return jsonify({"id": "return_food", "message": "2"}), 200
+            file.save("./img.jpg")
+            return jsonify({"id": "return_food", "message": "upload success"}), 200
         else:
             return jsonify({"error": "No file provided"}), 400
     elif service_id == '101':
         time.sleep(5)  # 修复 asyncio.sleep
 
-    return jsonify({"id": "return_food", "message": "1"}), 200
+    return jsonify({"id": "success", "message": "not work"}), 200
         
     
 
