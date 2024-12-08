@@ -61,9 +61,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                myData.add(new MyItem("Item R", R.drawable.login_background));
-                setContentView(R.layout.login_activity);
-
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
             }
         });
 
