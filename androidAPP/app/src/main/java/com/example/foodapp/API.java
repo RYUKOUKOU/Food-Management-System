@@ -1,29 +1,21 @@
 package com.example.foodapp;
 
-import static com.example.foodapp.MainActivity.*;
 import static com.example.foodapp.MainActivity.API_URL;
-
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
 import org.json.JSONObject;
-
-import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 import java.util.UUID;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 
 public class API extends AsyncTask<Void, Void, String> {
     private String service_id;
     private String message;
-    private Bitmap imageFile;
+    private byte[] imageFile;
 
-    public API(String service_id, String message, Bitmap imageFile) {
+    public API(String service_id, String message, byte[] imageFile) {
         this.service_id = service_id;
         this.message = message;
         this.imageFile = imageFile;
@@ -58,12 +50,8 @@ public class API extends AsyncTask<Void, Void, String> {
                     os.write(("Content-Disposition: form-data; name=\"file\"; filename=\"image.png\"\r\n").getBytes());
                     os.write("Content-Type: image/png\r\n\r\n".getBytes());
 
-                    // 将 Bitmap 转换为字节数组
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    imageFile.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                    byte[] imageBytes = byteArrayOutputStream.toByteArray();
-
-                    os.write(imageBytes);
+                    // 直接写入字节数组
+                    os.write(imageFile);
                     os.write("\r\n".getBytes());
                 }
 

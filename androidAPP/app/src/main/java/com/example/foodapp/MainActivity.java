@@ -5,18 +5,20 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.os.Build;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,17 +27,21 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity {
     public static String Server_url = "10.0.2.2";
     public static String API_URL = "http://"+ Server_url + ":8000/api/update_message";
-    private static final int REQUEST_IMAGE_CAPTURE = 1;
-    private static final int PERMISSIONS_REQUEST_CODE = 100;
-
+    private static final int CAMERA_REQUEST_CODE = 1;
+    private String currentPhotoPath;
     private static ArrayList<MyItem> myData = null;
     private static MyImageTextAdapter myAdapter;
 
@@ -85,8 +91,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int itemId = item.getItemId();
-                String requestBody = ""; // 用于传递给 API 的数据
-
                 if (itemId == R.id.nav_input) {
                     checkPermissions();
                     return true;
@@ -105,58 +109,70 @@ public class MainActivity extends AppCompatActivity {
 
     // 相机部分函数
     public void checkPermissions() {
-        // 检查是否有相机权限
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, PERMISSIONS_REQUEST_CODE);
-        }
-        // 检查是否有写入外部存储的权限（适配 Android 10 及以上版本）
-        else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_CODE);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST_CODE);
         } else {
-            // 如果权限已经被授予，启动拍照功能
-            dispatchTakePictureIntent();
+            launchCamera();
         }
     }
-
-    // 处理权限请求的回调
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSIONS_REQUEST_CODE) {
-            boolean cameraPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-            boolean storagePermissionGranted = grantResults.length > 1 && grantResults[1] == PackageManager.PERMISSION_GRANTED;
-
-            if (cameraPermissionGranted && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || storagePermissionGranted)) {
-                // 权限授予，启动拍照功能
-                dispatchTakePictureIntent();
-            } else {
-                // 权限被拒绝，提示用户
-                Toast.makeText(this, "权限被拒绝，无法拍照", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
     // 启动相机拍照意图
     @SuppressLint("QueryPermissionsNeeded")
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+    private void launchCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // 确认有应用能处理相机 Intent
+        if (true) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                System.out.println("无法创建图片文件");
+                return;
+            }
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider", photoFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(intent, CAMERA_REQUEST_CODE);
+            }
+        } else {
+            System.out.println("无法启动相机");
+        }
+    }
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
     }
 
     // 处理拍照后的结果
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            new API("update_img","null",imageBitmap).execute();
+
+        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
+            File imgFile = new File(currentPhotoPath);
+            if (imgFile.exists()) {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = false; // 不仅仅获取图片的大小，实际解码图片
+                Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath, options);
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream); // 使用JPEG格式并保持高质量（100）
+                byte[] byteArray = byteArrayOutputStream.toByteArray();
+                new API("update_img",null,byteArray).execute();
+                System.out.println("照片上传");
+            } else {
+                System.out.println("无法加载照片");
+            }
+        } else {
+            System.out.println("拍照失败或取消");
         }
     }
 
     public static void getFoodList(String foodList) throws JSONException {
         JSONObject jsonObject = new JSONObject(foodList);
-
         for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
             String key = it.next();
             System.out.println("Key: " + key + ", Value: " + jsonObject.getInt(key));
