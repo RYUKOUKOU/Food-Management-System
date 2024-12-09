@@ -5,14 +5,15 @@ import static com.example.foodapp.MainActivity.API_URL;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 import java.util.UUID;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 
 public class API extends AsyncTask<Void, Void, String> {
     private String service_id;
@@ -99,10 +100,12 @@ public class API extends AsyncTask<Void, Void, String> {
         return response;
     }
 
-    @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-        // 在这里处理请求结果，比如更新 UI 等
-        System.out.println("网络请求结果: " + result);
+        // 直接打印原始的 JSON 响应
+        System.out.println("Raw JSON Response: " + result);
+
+        if (result == null || result.isEmpty()) {
+            System.out.println("服务器未返回任何数据或发生错误");
+        }
     }
-}
