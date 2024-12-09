@@ -22,7 +22,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -79,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (itemId == R.id.nav_input) {
                     checkPermissions();
+
                     myData.add(new MyItem("Item 1", R.drawable.login_background));
                     return true;
                 } else if (itemId == R.id.nav_output) {
@@ -146,5 +151,48 @@ public class MainActivity extends AppCompatActivity {
             new API("update_img","null",imageBitmap).execute();
         }
     }
+
+    public void getFoodList(String jsonString) throws JSONException {
+        JSONObject jsonObject = new JSONObject(jsonString);
+//        for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
+//            String key = it.next();
+//            if (key.equals("id")){
+//                continue;
+//            }
+//            System.out.println("Key: " + key + ", Value: " + jsonObject.getInt(key));
+//            myData.add(new MyItem(key, R.drawable.login_background));
+//        }
+
+        String idMessage = jsonObject.getString("id");
+        if (idMessage.equals("return_food")){
+            for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
+                String key = it.next();
+                if (key.equals("id")){
+                    continue;
+                }
+                System.out.println("Key: " + key + ", Value: " + jsonObject.getInt(key));
+                myData.add(new MyItem("Item 2", R.drawable.login_background));
+            }
+        }else{
+            System.out.println("No message break");
+        }
+    }
+
+//    public Map<String, Integer> parseJsonToMap(String jsonString) throws JSONException {
+//        // 使用 org.json.JSONObject 解析
+//        JSONObject jsonObject = new JSONObject(jsonString);
+//
+//        // 準備存放結果的 Map
+//        Map<String, Integer> fruitMap = new HashMap<>();
+//
+//        // 遍歷 JSONObject 的鍵並提取值
+//        for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
+//            String key = it.next();
+//            int value = jsonObject.getInt(key); // 提取數量
+//            fruitMap.put(key, value);           // 加入 Map
+//        }
+//
+//        return fruitMap;
+//    }
 }
 
