@@ -36,7 +36,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int PERMISSIONS_REQUEST_CODE = 100;
 
-    private static List<MyItem> myData = null;
+    private static ArrayList<MyItem> myData = null;
+    private static MyImageTextAdapter myAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,12 +46,16 @@ public class MainActivity extends AppCompatActivity {
 
 
         // 设置 RecyclerView
+        if (myData == null) {
+            myData = new ArrayList<>();
+        }
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        myData = new ArrayList<>();
-        myData.add(new MyItem("base", R.drawable.login_background));
-        MyImageTextAdapter myAdapter = new MyImageTextAdapter(myData, this);
+        myAdapter = new MyImageTextAdapter(myData, this);
         recyclerView.setAdapter(myAdapter);
+
+        myData.add(new MyItem("base", R.drawable.login_background));
+        myAdapter.notifyItemInserted(myData.size() - 1);
 
         // 通知按钮
         ImageButton informButton = findViewById(R.id.informButton);  // 通知按钮
@@ -58,7 +63,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {  // 点击时调用
                 //startActivity(new Intent(MainActivity.this, InformActivity.class));  // 启动informActivity
-                myData.add(new MyItem("Item L", R.drawable.login_background));
+                myData.add(new MyItem("info", R.drawable.login_background));
+                myAdapter.notifyItemInserted(myData.size() - 1);
             }
         });
 
@@ -93,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.nav_suggestion) {
                     myData.add(new MyItem("Item 3", R.drawable.login_background));
+                    myAdapter.notifyItemInserted(myData.size() - 1);
                     return true;
                 }
                 return false;
@@ -154,15 +161,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static void getFoodList(String jsonString) throws JSONException {
         JSONObject jsonObject = new JSONObject(jsonString);
-//        for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
-//            String key = it.next();
-//            if (key.equals("id")){
-//                continue;
-//            }
-//            System.out.println("Key: " + key + ", Value: " + jsonObject.getInt(key));
-//            myData.add(new MyItem(key, R.drawable.login_background));
-//        }
-
         String idMessage = jsonObject.getString("id");
         if (idMessage.equals("return_food")){
             for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
@@ -171,28 +169,12 @@ public class MainActivity extends AppCompatActivity {
                     continue;
                 }
                 System.out.println("Key: " + key + ", Value: " + jsonObject.getInt(key));
-                myData.add(new MyItem("Item 2", R.drawable.login_background));
+                myData.add(new MyItem(key, R.drawable.login_background));
+                myAdapter.notifyItemInserted(myData.size() - 1);
             }
         }else{
             System.out.println("No message break");
         }
     }
-
-//    public Map<String, Integer> parseJsonToMap(String jsonString) throws JSONException {
-//        // 使用 org.json.JSONObject 解析
-//        JSONObject jsonObject = new JSONObject(jsonString);
-//
-//        // 準備存放結果的 Map
-//        Map<String, Integer> fruitMap = new HashMap<>();
-//
-//        // 遍歷 JSONObject 的鍵並提取值
-//        for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
-//            String key = it.next();
-//            int value = jsonObject.getInt(key); // 提取數量
-//            fruitMap.put(key, value);           // 加入 Map
-//        }
-//
-//        return fruitMap;
-//    }
 }
 
