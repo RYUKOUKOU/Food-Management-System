@@ -8,7 +8,7 @@ import json
 import Args
 import os   
 import time
-#import ImagePredict
+import ImagePredict
 
 # 初始化 Flask 和 SocketIO
 main = Flask(__name__)
@@ -34,10 +34,8 @@ def update_message():
     if service_id == 'update_img':
         file = request.files.get('file')
         if file:
-            #json_data = json.dumps(ImagePredict.return_food_info(ImagePredict.predict(model,file)))
-            json_data = "1"
-            #return_message('return_food', json_data)
-            return jsonify({"id": "return_food", "message": "2"}), 200
+            json_data = json.dumps(ImagePredict.return_food_info(ImagePredict.predict(model,file)))
+            return jsonify({"id": "return_food", "message": json_data}), 200
         else:
             return jsonify({"error": "No file provided"}), 400
     elif service_id == '101':
@@ -56,5 +54,5 @@ def return_message(id, message):
 
 if __name__ == '__main__':
     Args=Args.Args()
-    #model = ImagePredict.predict_init(Args,x=0)
+    model = ImagePredict.predict_init(Args,x=0)
     socketio.run(main, host='127.0.0.1', port=8000)

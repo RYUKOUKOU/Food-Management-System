@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int PERMISSIONS_REQUEST_CODE = 100;
 
+    private static List<MyItem> myData = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         // 设置 RecyclerView
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        List<MyItem> myData = new ArrayList<>();
+        myData = new ArrayList<>();
         myData.add(new MyItem("base", R.drawable.login_background));
         MyImageTextAdapter myAdapter = new MyImageTextAdapter(myData, this);
         recyclerView.setAdapter(myAdapter);
