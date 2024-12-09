@@ -36,14 +36,14 @@ def update_message():
     if service_id == 'update_img':
         file = request.files.get('file')
         if file:
-            file.save(os.path.join(Args.path, "image.jpg"))
-            img = cv2.imread(os.path.join(Args.path, "image.jpg"))
+            file.save(os.path.join(Args.path, "image.png"))
+            img = cv2.imread(os.path.join(Args.path, "image.png"))
             json_data = json.dumps(ImagePredict.return_food_info(ImagePredict.predict(model,img),Args))
 
             #演示使用
             ImagePredict.img_show(Args,img,ImagePredict.predict(model,img))
 
-            os.remove(os.path.join(Args.path, "image.jpg"))
+            os.remove(os.path.join(Args.path, "image.png"))
             return jsonify({"id": "return_food", "message": json_data}), 200
         else:
             return jsonify({"error": "No file provided"}), 400
