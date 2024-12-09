@@ -89,17 +89,12 @@ public class MainActivity extends AppCompatActivity {
 
                 if (itemId == R.id.nav_input) {
                     checkPermissions();
-
-                    myData.add(new MyItem("Item 1", R.drawable.login_background));
                     return true;
                 } else if (itemId == R.id.nav_output) {
-                    myData.add(new MyItem("Item 2", R.drawable.login_background));
                     new API("101", null, null).execute();
 
                     return true;
                 } else if (itemId == R.id.nav_suggestion) {
-                    myData.add(new MyItem("Item 3", R.drawable.login_background));
-                    myAdapter.notifyItemInserted(myData.size() - 1);
                     return true;
                 }
                 return false;
@@ -159,21 +154,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static void getFoodList(String jsonString) throws JSONException {
-        JSONObject jsonObject = new JSONObject(jsonString);
-        String idMessage = jsonObject.getString("id");
-        if (idMessage.equals("return_food")){
-            for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
-                String key = it.next();
-                if (key.equals("id")){
-                    continue;
-                }
-                System.out.println("Key: " + key + ", Value: " + jsonObject.getInt(key));
-                myData.add(new MyItem(key, R.drawable.login_background));
-                myAdapter.notifyItemInserted(myData.size() - 1);
-            }
-        }else{
-            System.out.println("No message break");
+    public static void getFoodList(String foodList) throws JSONException {
+        JSONObject jsonObject = new JSONObject(foodList);
+
+        for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
+            String key = it.next();
+            System.out.println("Key: " + key + ", Value: " + jsonObject.getInt(key));
+            myData.add(new MyItem(key, R.drawable.login_background));
+            myAdapter.notifyItemInserted(myData.size() - 1);
         }
     }
 }
