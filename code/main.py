@@ -11,6 +11,7 @@ import time
 import ImagePredict
 import cv2
 
+
 # 初始化 Flask 和 SocketIO
 main = Flask(__name__)
 socketio = SocketIO(main)
@@ -38,6 +39,10 @@ def update_message():
             file.save(os.path.join(Args.path, "image.jpg"))
             img = cv2.imread(os.path.join(Args.path, "image.jpg"))
             json_data = json.dumps(ImagePredict.return_food_info(ImagePredict.predict(model,img),Args))
+
+            #演示使用
+            ImagePredict.img_show(Args,img,ImagePredict.predict(model,img))
+
             os.remove(os.path.join(Args.path, "image.jpg"))
             return jsonify({"id": "return_food", "message": json_data}), 200
         else:
@@ -47,8 +52,6 @@ def update_message():
 
     return jsonify({"id": "return_food", "message": "1"}), 200
         
-    
-
 # 暂时弃用
 @socketio.on('return_message')
 def return_message(id, message):

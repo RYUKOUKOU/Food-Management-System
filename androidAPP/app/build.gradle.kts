@@ -42,7 +42,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation ("com.google.code.gson:gson:2.8.9'")
+
     implementation ("io.socket:socket.io-client:2.0.1")
     implementation("net.objecthunter:exp4j:0.4.8")
     implementation ("com.google.android.material:material:1.5.0")
