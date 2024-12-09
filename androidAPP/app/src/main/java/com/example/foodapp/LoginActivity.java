@@ -1,6 +1,7 @@
 package com.example.foodapp;
 
 import static com.example.foodapp.MainActivity.API_URL;
+import static com.example.foodapp.MainActivity.Server_url;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -65,7 +66,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginUser( String username, String password,String serverAddress) {
-    MainActivity.Server_url = serverAddress;
+    Server_url = serverAddress;
+    API_URL = "http://"+ Server_url + ":8000/api/update_message";
     System.out.println(API_URL);
     new API("101", null, null).execute();
     }
