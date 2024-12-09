@@ -9,6 +9,7 @@ import Args
 import os   
 import time
 import ImagePredict
+import cv2
 
 # 初始化 Flask 和 SocketIO
 main = Flask(__name__)
@@ -34,7 +35,10 @@ def update_message():
     if service_id == 'update_img':
         file = request.files.get('file')
         if file:
-            json_data = json.dumps(ImagePredict.return_food_info(ImagePredict.predict(model,file)))
+            file.save(os.path.join(Args.path, "image.jpg"))
+            img = cv2.imread(os.path.join(Args.path, "image.jpg"))
+            json_data = json.dumps(ImagePredict.return_food_info(ImagePredict.predict(model,img),Args))
+            os.remove(os.path.join(Args.path, "image.jpg"))
             return jsonify({"id": "return_food", "message": json_data}), 200
         else:
             return jsonify({"error": "No file provided"}), 400

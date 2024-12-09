@@ -1,6 +1,6 @@
 from ultralytics import YOLO
 import os
-import Args
+
 
 def predict_init(args,x=0):
     model = YOLO( os.path.join(args.model_dir, args.model[x]))
@@ -10,10 +10,12 @@ def predict(model, img):
     res = model.predict(source=img)
     return res[0]
 
-def return_food_info(result,args=Args):
+def return_food_info(result,args):
   boxes = result.boxes
   names = result.names
+  #confidence_threshold = 0.1
   confidence_threshold = args.confidence_threshold
+
   object_counts = {}
   for box in boxes:
       confidence = box.conf[0]
