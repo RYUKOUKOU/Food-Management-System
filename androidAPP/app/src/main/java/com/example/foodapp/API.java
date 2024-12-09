@@ -105,7 +105,19 @@ public class API extends AsyncTask<Void, Void, String> {
         // 直接打印原始的 JSON 响应
         System.out.println("Raw JSON Response: " + result);
 
-        if (result == null || result.isEmpty()) {
+        if (result != null && !result.isEmpty()) {
+            try {
+                // 假设 result 是一个简单的 JSON 格式字符串，比如 {"id":1, "message":"Success"}
+                String id = result.split("\"id\":")[1].split(",")[0].trim();
+                String message = result.split("\"message\":")[1].split("}")[0].replace("\"", "").trim();
+
+                // 输出提取的 id 和 message
+                System.out.println("ID: " + id);
+                System.out.println("Message: " + message);
+            } catch (Exception e) {
+                System.out.println("解析响应失败: " + e.getMessage());
+            }
+        } else {
             System.out.println("服务器未返回任何数据或发生错误");
         }
     }
