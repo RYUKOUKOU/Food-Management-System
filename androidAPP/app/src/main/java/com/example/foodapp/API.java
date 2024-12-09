@@ -1,5 +1,6 @@
 package com.example.foodapp;
 
+import static com.example.foodapp.MainActivity.*;
 import static com.example.foodapp.MainActivity.API_URL;
 
 import android.graphics.Bitmap;
@@ -54,26 +55,16 @@ public class API extends AsyncTask<Void, Void, String> {
                 // 写入图片文件部分
                 if (imageFile != null) {
                     os.write(("--" + boundary + "\r\n").getBytes());
-                    os.write(("Content-Disposition: form-data; name=\"file\"; filename=\"image.jpg\"\r\n").getBytes());
-                    os.write("Content-Type: image/jpeg\r\n\r\n".getBytes());
-
-                    // 使用 FileInputStream 读取文件
-                    //try (FileInputStream fis = new FileInputStream(imageFile)) {
-                    //    byte[] buffer = new byte[4096];
-                    //    int bytesRead;
-                    //    while ((bytesRead = fis.read(buffer)) != -1) {
-                    //        os.write(buffer, 0, bytesRead);
-                    //    }
-                    //}
+                    os.write(("Content-Disposition: form-data; name=\"file\"; filename=\"image.png\"\r\n").getBytes());
+                    os.write("Content-Type: image/png\r\n\r\n".getBytes());
 
                     // 将 Bitmap 转换为字节数组
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    imageFile.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+                    imageFile.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
                     byte[] imageBytes = byteArrayOutputStream.toByteArray();
 
                     os.write(imageBytes);
                     os.write("\r\n".getBytes());
-                    System.out.println("0101");
                 }
 
                 // 写入结束边界
@@ -110,11 +101,11 @@ public class API extends AsyncTask<Void, Void, String> {
             String message = jsonResponse.getString("message");
 
             System.out.println("Service ID: " + service_id + "message:" + message);
+
+            if (service_id == "return_food") MainActivity.getFoodList(message);
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        if (service_id == "return_food") {
-//
-//        }
+
     }
 }

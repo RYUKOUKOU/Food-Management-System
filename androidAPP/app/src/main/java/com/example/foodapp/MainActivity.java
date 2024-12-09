@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void getFoodList(String jsonString) throws JSONException {
+    public static void getFoodList(String jsonString) throws JSONException {
         JSONObject jsonObject = new JSONObject(jsonString);
 //        for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
 //            String key = it.next();

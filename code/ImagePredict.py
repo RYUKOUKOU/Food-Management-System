@@ -51,5 +51,5 @@ def img_show(args,image, *got):
           cv2.rectangle(image, (x1, y1), (x2, y2), color, 3)
           label = f'{class_name} {confidence:.2f}'
           cv2.putText(image, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, color, 2)
-    cv2.imwrite(os.path.join(args.path, 'output.jpg'),image)
+    cv2.imwrite(os.path.join(args.path, 'output.png'),image)
     return image
