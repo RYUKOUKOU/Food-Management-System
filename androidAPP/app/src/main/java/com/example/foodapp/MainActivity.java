@@ -27,7 +27,7 @@ import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
-    public static String Server_url = null;
+    public static String Server_url = "10.0.2.2";
     public static String API_URL = "http://"+ Server_url + ":8000/api/update_message";
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int PERMISSIONS_REQUEST_CODE = 100;
@@ -141,10 +141,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            // 获取返回的图片并设置到ImageView
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
-//            imageView.setImageBitmap(imageBitmap);
+            new API("update_img","null",imageBitmap).execute();
         }
     }
 }
