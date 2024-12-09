@@ -152,47 +152,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void getFoodList(String jsonString) throws JSONException {
-        JSONObject jsonObject = new JSONObject(jsonString);
-//        for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
-//            String key = it.next();
-//            if (key.equals("id")){
-//                continue;
-//            }
-//            System.out.println("Key: " + key + ", Value: " + jsonObject.getInt(key));
-//            myData.add(new MyItem(key, R.drawable.login_background));
-//        }
+    public static void getFoodList(String foodList) throws JSONException {
+        JSONObject jsonObject = new JSONObject(foodList);
 
-        String idMessage = jsonObject.getString("id");
-        if (idMessage.equals("return_food")){
-            for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
-                String key = it.next();
-                if (key.equals("id")){
-                    continue;
-                }
-                System.out.println("Key: " + key + ", Value: " + jsonObject.getInt(key));
-                myData.add(new MyItem("Item 2", R.drawable.login_background));
-            }
-        }else{
-            System.out.println("No message break");
+        for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
+            String key = it.next();
+            System.out.println("Key: " + key + ", Value: " + jsonObject.getInt(key));
+            myData.add(new MyItem(key, R.drawable.login_background));
         }
     }
-
-//    public Map<String, Integer> parseJsonToMap(String jsonString) throws JSONException {
-//        // 使用 org.json.JSONObject 解析
-//        JSONObject jsonObject = new JSONObject(jsonString);
-//
-//        // 準備存放結果的 Map
-//        Map<String, Integer> fruitMap = new HashMap<>();
-//
-//        // 遍歷 JSONObject 的鍵並提取值
-//        for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
-//            String key = it.next();
-//            int value = jsonObject.getInt(key); // 提取數量
-//            fruitMap.put(key, value);           // 加入 Map
-//        }
-//
-//        return fruitMap;
-//    }
 }
 
