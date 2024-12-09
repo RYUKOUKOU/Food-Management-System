@@ -5,6 +5,8 @@ import static com.example.foodapp.MainActivity.API_URL;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -102,22 +104,14 @@ public class API extends AsyncTask<Void, Void, String> {
 
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-        // 直接打印原始的 JSON 响应
-        System.out.println("Raw JSON Response: " + result);
+        try {
+            JSONObject jsonResponse = new JSONObject(result);
+            String service_id = jsonResponse.getString("id");
+            String message = jsonResponse.getString("message");
 
-        if (result != null && !result.isEmpty()) {
-            try {
-                // 假设 result 是一个简单的 JSON 格式字符串，比如 {"id":1, "message":"Success"}
-                String id = result.split("\"id\":")[1].split(",")[0].trim();
-                String message = result.split("\"message\":")[1].split("}")[0].replace("\"", "").trim();
-
-                // 输出提取的 id 和 message
-                System.out.println("ID: " + id);
-                System.out.println("Message: " + message);
-            } catch (Exception e) {
-                System.out.println("解析响应失败: " + e.getMessage());
-            }
-        } else {
-            System.out.println("服务器未返回任何数据或发生错误");
+            System.out.println("Service ID: " + service_id + "message:" + message);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+}
