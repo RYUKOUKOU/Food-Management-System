@@ -39,7 +39,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     public static String Server_url = "10.0.2.2";
-    public static String API_URL = "http://"+ Server_url + ":8000/api/update_message";
+    public static String API_URL = "http://"+ Server_url + ":8000/api/upload_message";
     private static final int CAMERA_REQUEST_CODE = 1;
     private String currentPhotoPath;
     private static ArrayList<MyItem> myData = null;
@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream); // 使用JPEG格式并保持高质量（100）
                 byte[] byteArray = byteArrayOutputStream.toByteArray();
-                new API("update_img",null,byteArray).execute();
+                new API("upload_img",null,byteArray).execute();
                 System.out.println("照片上传");
             } else {
                 System.out.println("无法加载照片");
