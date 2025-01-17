@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,13 +31,21 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         MyItem item = itemList.get(position);
+
         holder.textView.setText(item.getText());
         holder.imageView.setImageResource(item.getImageResId());
 
+        // 动态更新 ProgressBar 进度
+        if (holder.progressBar != null) {
+            holder.progressBar.setProgress(item.getPercent());  // 更新进度
+        }
+
+        // 处理点击事件
         holder.itemView.setOnClickListener(v -> {
-            // 处理点击事件，例如启动新活动或显示信息
+            // 处理点击事件
         });
     }
+
 
     @Override
     public int getItemCount() {
@@ -46,11 +55,13 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
     static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
         ImageView imageView;
+        ProgressBar progressBar;
 
         MyViewHolder(View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.item_text);
             imageView = itemView.findViewById(R.id.item_image);
+            progressBar = itemView.findViewById(R.id.percentage_ring);
         }
     }
 }
