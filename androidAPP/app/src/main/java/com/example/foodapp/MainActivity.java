@@ -10,11 +10,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageButton;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -43,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST_CODE = 1;
     private String currentPhotoPath;
     private static ArrayList<MyItem> myData = null;
+    @SuppressLint("StaticFieldLeak")
     private static MyImageTextAdapter myAdapter;
 
     @Override
@@ -65,45 +63,34 @@ public class MainActivity extends AppCompatActivity {
 
         // 通知按钮
         ImageButton informButton = findViewById(R.id.informButton);  // 通知按钮
-        informButton.setOnClickListener(new View.OnClickListener() {  // 通知按钮
-            @Override
-            public void onClick(View v) {  // 点击时调用
-                //startActivity(new Intent(MainActivity.this, InformActivity.class));  // 启动informActivity
-                myData.add(new MyItem("info", R.drawable.login_background,50));
-                myAdapter.notifyItemInserted(myData.size() - 1);
-            }
+        // 通知按钮
+        informButton.setOnClickListener(v -> {  // 点击时调用
+            //startActivity(new Intent(MainActivity.this, InformActivity.class));  // 启动informActivity
+            myData.add(new MyItem("info", R.drawable.login_background,50));
+            myAdapter.notifyItemInserted(myData.size() - 1);
         });
 
         // 登录按钮
         ImageButton loginButton = findViewById(R.id.loginButton);
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
-            }
+        loginButton.setOnClickListener(v -> {
+            //startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
         });
 
         // 导航栏按钮
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int itemId = item.getItemId();
-                if (itemId == R.id.nav_input) {
-                    checkPermissions();
-                    return true;
-                } else if (itemId == R.id.nav_output) {
-                    new API("101", null, null).execute();
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_input) {
+                checkPermissions();
+                return true;
+            } else if (itemId == R.id.nav_output) {
+                new API("101", null, null).execute();
 
-                    return true;
-                } else if (itemId == R.id.nav_suggestion) {
-                    return true;
-                }
-                return false;
+                return true;
+            } else return itemId == R.id.nav_suggestion;
 
-            }
         });
     }
 
@@ -120,23 +107,17 @@ public class MainActivity extends AppCompatActivity {
     private void launchCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // 确认有应用能处理相机 Intent
-        if (true) {
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                System.out.println("无法创建图片文件");
-                return;
-            }
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.example.android.fileprovider", photoFile);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(intent, CAMERA_REQUEST_CODE);
-            }
-        } else {
-            System.out.println("无法启动相机");
+        File photoFile;
+        try {
+            photoFile = createImageFile();
+        } catch (IOException ex) {
+            System.out.println("无法创建图片文件");
+            return;
         }
+        Uri photoURI = FileProvider.getUriForFile(this,
+                "com.example.android.foodappfileprovider", photoFile);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+        startActivityForResult(intent, CAMERA_REQUEST_CODE);
     }
     private File createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
