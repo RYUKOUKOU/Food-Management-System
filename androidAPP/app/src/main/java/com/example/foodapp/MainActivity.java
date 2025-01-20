@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         myAdapter = new MyImageTextAdapter(myData, this);
         recyclerView.setAdapter(myAdapter);
 
-        myData.add(new MyItem("base", R.drawable.login_background));
+        myData.add(new MyItem("Apple", R.drawable.apple,100));
         myAdapter.notifyItemInserted(myData.size() - 1);
 
         // 通知按钮
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {  // 点击时调用
                 //startActivity(new Intent(MainActivity.this, InformActivity.class));  // 启动informActivity
-                myData.add(new MyItem("info", R.drawable.login_background));
+                myData.add(new MyItem("info", R.drawable.login_background,50));
                 myAdapter.notifyItemInserted(myData.size() - 1);
             }
         });
@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
         for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
             String key = it.next();
             System.out.println("Key: " + key + ", Value: " + jsonObject.getInt(key));
-            myData.add(new MyItem(key, R.drawable.login_background));
+            myData.add(new MyItem(key, R.drawable.login_background,100));
             myAdapter.notifyItemInserted(myData.size() - 1);
         }
     }

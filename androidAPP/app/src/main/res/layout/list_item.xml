@@ -1,19 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="16dp">
 
-    <ImageView
-        android:id="@+id/item_image"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginEnd="16dp" />
+    <!-- 用于显示百分比的圆环 -->
 
+    <RelativeLayout
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+>
+
+        <!-- 圆环背景 -->
+        <ProgressBar
+            android:id="@+id/circularProgressBar"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_centerInParent="true"
+            android:progress="100"
+            android:max="100"
+            android:indeterminate="false"
+            android:progressDrawable="@drawable/progress_ring"
+            tools:ignore="MissingConstraints" />
+
+
+        <!-- 中间的图标 -->
+        <ImageView
+            android:id="@+id/item_image"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/login_background"
+            android:scaleType="centerInside"/>
+
+    </RelativeLayout>
+
+    <!-- 显示文本 -->
     <TextView
         android:id="@+id/item_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp" />
+
+
 </LinearLayout>

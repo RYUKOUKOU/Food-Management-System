@@ -34,15 +34,14 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
 
         holder.textView.setText(item.getText());
         holder.imageView.setImageResource(item.getImageResId());
+        holder.circularProgressBar.setProgress(item.getPercent());;
 
-        // 动态更新 ProgressBar 进度
-        if (holder.progressBar != null) {
-            holder.progressBar.setProgress(item.getPercent());  // 更新进度
-        }
+
 
         // 处理点击事件
         holder.itemView.setOnClickListener(v -> {
             // 处理点击事件
+            System.out.println("点击");
         });
     }
 
@@ -55,13 +54,16 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
     static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
         ImageView imageView;
-        ProgressBar progressBar;
+        ProgressBar circularProgressBar;
+
+
 
         MyViewHolder(View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.item_text);
             imageView = itemView.findViewById(R.id.item_image);
-            progressBar = itemView.findViewById(R.id.percentage_ring);
+            circularProgressBar = itemView.findViewById(R.id.circularProgressBar);;
         }
+
     }
 }

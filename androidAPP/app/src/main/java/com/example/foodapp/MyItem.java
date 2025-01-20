@@ -3,10 +3,12 @@ package com.example.foodapp;
 public class MyItem {
     private String text;
     private int imageResId;
+    private int percent;
 
-    public MyItem(String text, int imageResId) {
+    public MyItem(String text, int imageResId,int percent) {
         this.text = text;
         this.imageResId = imageResId;
+        this.percent = percent;
     }
 
     public String getText() {
@@ -16,4 +18,6 @@ public class MyItem {
     public int getImageResId() {
         return imageResId;
     }
+
+    public  int getPercent(){ return percent;}
 }
