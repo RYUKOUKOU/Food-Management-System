@@ -10,9 +10,7 @@
 
     <RelativeLayout
         android:layout_width="72dp"
-        android:layout_height="72dp"
->
-
+        android:layout_height="72dp">
         <!-- 圆环背景 -->
         <ProgressBar
             android:id="@+id/circularProgressBar"
@@ -25,8 +23,6 @@
             android:indeterminate="false"
             android:progressDrawable="@drawable/progress_ring"
             tools:ignore="MissingConstraints" />
-
-
         <!-- 中间的图标 -->
         <ImageView
             android:id="@+id/item_image"
@@ -43,7 +39,7 @@
         android:id="@+id/item_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp" />
+        android:textSize="35sp" />
 
 
 </LinearLayout>

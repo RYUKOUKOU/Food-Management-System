@@ -45,6 +45,44 @@
         android:layout_below="@id/toolbar"
         android:layout_above="@id/bottom_navigation" />
 
+    <FrameLayout
+        android:id="@+id/popup_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="351dp"
+        android:layout_above="@id/bottom_navigation"
+        android:layout_below="@id/toolbar"
+        android:layout_marginTop="400dp"
+        android:background="#A9A9A9"
+        android:padding="16dp"
+        android:visibility="gone"
+        android:clickable="true">
+
+        <TextView
+            android:id="@+id/suggest_text"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:text="#使用したい食材を追加してください。もし追加しない場合は、システムが日付に基づいて優先的に食材をおすすめします。"
+            android:textSize="16sp"
+            android:background="#D3D3D3"/>
+        <!-- 弹窗内容 -->
+        <LinearLayout
+            android:id="@+id/custom_popup"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="bottom"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/suggest_send"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:text="送信"/>
+
+
+        </LinearLayout>
+    </FrameLayout>
+
     <!-- Bottom Navigation Bar -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"

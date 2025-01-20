@@ -10,6 +10,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -89,8 +91,15 @@ public class MainActivity extends AppCompatActivity {
                 new API("101", null, null).execute();
 
                 return true;
-            } else return itemId == R.id.nav_suggestion;
-
+            } else if (itemId == R.id.nav_suggestion) {
+                View popupOverlay = findViewById(R.id.popup_overlay);
+                    if (popupOverlay.getVisibility() == View.GONE) {
+                        popupOverlay.setVisibility(View.VISIBLE);
+                    } else {
+                        popupOverlay.setVisibility(View.GONE);
+                    }
+                return true;
+            } else  return false;
         });
     }
 
@@ -157,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
         for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
             String key = it.next();
             System.out.println("Key: " + key + ", Value: " + jsonObject.getInt(key));
+
             myData.add(new MyItem(key, R.drawable.login_background,100));
             myAdapter.notifyItemInserted(myData.size() - 1);
         }
