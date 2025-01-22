@@ -102,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
                     popupOverlay.setVisibility(View.VISIBLE);
                 } else {
                     popupOverlay.setVisibility(View.GONE);
+                    listModel = null;
                 }
             } else return false;
             return false;
