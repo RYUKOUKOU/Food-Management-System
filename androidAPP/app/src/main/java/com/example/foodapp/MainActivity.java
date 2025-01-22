@@ -57,21 +57,19 @@ public class MainActivity extends AppCompatActivity {
         // 设置 RecyclerView
         if (myData == null) {
             myData = new ArrayList<>();
+            myData.add(new MyItem("Apple", 7));
         }
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         myAdapter = new MyImageTextAdapter(myData);
         recyclerView.setAdapter(myAdapter);
 
-        myData.add(new MyItem("Apple", R.drawable.apple,100));
-        myAdapter.notifyItemInserted(myData.size() - 1);
-
         // 通知按钮
         ImageButton informButton = findViewById(R.id.informButton);  // 通知按钮
         // 通知按钮
         informButton.setOnClickListener(v -> {  // 点击时调用
             //startActivity(new Intent(MainActivity.this, InformActivity.class));  // 启动informActivity
-            myData.add(new MyItem("info", R.drawable.login_background,50));
+            myData.add(new MyItem("info", 5));
             myAdapter.notifyItemInserted(myData.size() - 1);
         });
 
@@ -102,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
                     popupOverlay.setVisibility(View.VISIBLE);
                 } else {
                     popupOverlay.setVisibility(View.GONE);
+                    recyclerView.setAdapter(myAdapter);
                     listModel = null;
                 }
             } else return false;
@@ -173,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
             String key = it.next();
             System.out.println("Key: " + key + ", Value: " + jsonObject.getInt(key));
 
-            myData.add(new MyItem(key, R.drawable.login_background,100));
+            myData.add(new MyItem(key, 1));
             myAdapter.notifyItemInserted(myData.size() - 1);
         }
     }

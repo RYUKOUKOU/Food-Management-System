@@ -33,7 +33,7 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         MyItem item = itemList.get(position);
 
-        holder.textView.setText(item.getText());
+        holder.textView.setText(item.getName());
         holder.imageView.setImageResource(item.getImageResId());
         holder.circularProgressBar.setProgress(item.getPercent());
 
