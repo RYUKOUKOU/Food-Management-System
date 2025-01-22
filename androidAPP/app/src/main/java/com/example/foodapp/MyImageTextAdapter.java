@@ -1,6 +1,7 @@
 package com.example.foodapp;
 
-import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,15 +11,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
+import java.util.Objects;
 
 public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.MyViewHolder> {
 
-    private List<MyItem> itemList;
-    private Context context;
+    private final List<MyItem> itemList;
+    private String listModel = MainActivity.listModel;
 
-    public MyImageTextAdapter(List<MyItem> itemList, Context context) {
+    public MyImageTextAdapter(List<MyItem> itemList) {
         this.itemList = itemList;
-        this.context = context;
     }
 
     @NonNull
@@ -34,14 +35,15 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
 
         holder.textView.setText(item.getText());
         holder.imageView.setImageResource(item.getImageResId());
-        holder.circularProgressBar.setProgress(item.getPercent());;
-
-
+        holder.circularProgressBar.setProgress(item.getPercent());
 
         // 处理点击事件
         holder.itemView.setOnClickListener(v -> {
-            // 处理点击事件
-            System.out.println("点击");
+            listModel = MainActivity.listModel;
+            System.out.println(listModel);
+            if (Objects.equals(listModel, "suggestion")){
+                check(holder);
+            }else if(Objects.equals(listModel, "lock")){return;}
         });
     }
 
@@ -51,19 +53,29 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
         return itemList.size();
     }
 
-    static class MyViewHolder extends RecyclerView.ViewHolder {
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
         ImageView imageView;
         ProgressBar circularProgressBar;
-
-
+        boolean checked;
 
         MyViewHolder(View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.item_text);
             imageView = itemView.findViewById(R.id.item_image);
-            circularProgressBar = itemView.findViewById(R.id.circularProgressBar);;
+            circularProgressBar = itemView.findViewById(R.id.circularProgressBar);
+            checked = false;
         }
 
+    }
+
+    public void check(MyViewHolder holder){
+        if (!holder.checked){
+            holder.checked = true;
+            holder.itemView.setBackground(new ColorDrawable(Color.parseColor("#d3d3d3")));
+        }else {
+            holder.checked = false;
+            holder.itemView.setBackground(new ColorDrawable(Color.parseColor("#ffffff")));
+        }
     }
 }

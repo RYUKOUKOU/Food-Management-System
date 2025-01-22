@@ -6,12 +6,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private static ArrayList<MyItem> myData = null;
     @SuppressLint("StaticFieldLeak")
     private static MyImageTextAdapter myAdapter;
+    public  static String listModel = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         }
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        myAdapter = new MyImageTextAdapter(myData, this);
+        myAdapter = new MyImageTextAdapter(myData);
         recyclerView.setAdapter(myAdapter);
 
         myData.add(new MyItem("Apple", R.drawable.apple,100));
@@ -92,14 +95,16 @@ public class MainActivity extends AppCompatActivity {
 
                 return true;
             } else if (itemId == R.id.nav_suggestion) {
+                listModel = "suggestion";
+                System.out.println(listModel);
                 View popupOverlay = findViewById(R.id.popup_overlay);
-                    if (popupOverlay.getVisibility() == View.GONE) {
-                        popupOverlay.setVisibility(View.VISIBLE);
-                    } else {
-                        popupOverlay.setVisibility(View.GONE);
-                    }
-                return true;
-            } else  return false;
+                if (popupOverlay.getVisibility() == View.GONE) {
+                    popupOverlay.setVisibility(View.VISIBLE);
+                } else {
+                    popupOverlay.setVisibility(View.GONE);
+                }
+            } else return false;
+            return false;
         });
     }
 

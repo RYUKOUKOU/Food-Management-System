@@ -20,4 +20,8 @@ public class MyItem {
     }
 
     public  int getPercent(){ return percent;}
+
+    public  void setPercent(int per){
+        percent = per;
+    }
 }
