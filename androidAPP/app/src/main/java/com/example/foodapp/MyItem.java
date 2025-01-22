@@ -11,22 +11,25 @@ public class MyItem {
 
     private static final Map<String, Integer> nameToImageMap = new HashMap<>();
     static {
-        nameToImageMap.put("Apple", R.drawable.item_images_apple);
-        nameToImageMap.put("Banana", R.drawable.banana);
-        nameToImageMap.put("Broccoli", R.drawable.broccoli);
-        nameToImageMap.put("Cabbage", R.drawable.cabbage);
-        nameToImageMap.put("Carrot", R.drawable.carrot);
-        nameToImageMap.put("Cucumber", R.drawable.grape);
-        nameToImageMap.put("Grape", R.drawable.grape);
-        nameToImageMap.put("Lemon", R.drawable.lemon);
-        nameToImageMap.put("Orange", R.drawable.orange);
-        nameToImageMap.put("Potato", R.drawable.potato);
+        nameToImageMap.put("Apple", R.drawable.itemimages_apple);
+        nameToImageMap.put("Banana", R.drawable.itemimages_banana);
+        nameToImageMap.put("Broccoli", R.drawable.itemimages_broccoli);
+        nameToImageMap.put("Cabbage", R.drawable.itemimages_cabbage);
+        nameToImageMap.put("Carrot", R.drawable.itemimages_carrot);
+        nameToImageMap.put("Cucumber", R.drawable.itemimages_cucumber);
+        nameToImageMap.put("Grape", R.drawable.itemimages_grape);
+        nameToImageMap.put("Lemon", R.drawable.itemimages_lemon);
+        nameToImageMap.put("Orange", R.drawable.itemimages_orange);
+        nameToImageMap.put("Potato", R.drawable.itemimages_potato);
     }
 
     public MyItem(String text, int shelfLife) {
         this.name = text;
         this.shelfLife = shelfLife;
+        this.imageResId = nameToImageMap.get(name);
+        this.percent = 100;
     }
+
 
     public String getName() {
         return name;
