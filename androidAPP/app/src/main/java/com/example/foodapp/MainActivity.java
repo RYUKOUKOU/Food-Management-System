@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -68,13 +69,12 @@ public class MainActivity extends AppCompatActivity {
         myAdapter = new MyImageTextAdapter(myData);
         recyclerView.setAdapter(myAdapter);
 
+
         // 通知按钮
-        ImageButton informButton = findViewById(R.id.informButton);  // 通知按钮
-        // 通知按钮
+        ImageButton informButton = findViewById(R.id.informButton);
         informButton.setOnClickListener(v -> {  // 点击时调用
-            //startActivity(new Intent(MainActivity.this, InformActivity.class));  // 启动informActivity
-            myData.add(new MyItem("info", 5));
-            myAdapter.notifyItemInserted(myData.size() - 1);
+            System.out.println("通知");
+
         });
 
         // 登录按钮
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         // 导航栏按钮
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            recyclerView.setAdapter(myAdapter);
+
             int itemId = item.getItemId();
             if (itemId == R.id.nav_input) {
                 checkPermissions();
@@ -100,15 +100,16 @@ public class MainActivity extends AppCompatActivity {
             } else if (itemId == R.id.nav_suggestion) {
                 if (!Objects.equals(listModel, "suggestion")){
                     listModel = "suggestion";
-                    System.out.println(listModel);
-                    View popupOverlay = findViewById(R.id.popup_overlay);
-                    if (popupOverlay.getVisibility() == View.GONE) {
-                        popupOverlay.setVisibility(View.VISIBLE);
-                    } else {
-                        popupOverlay.setVisibility(View.GONE);
-                    }
-                }else {MyImageTextAdapter.confirmSelection();}
+                    popOverlayOn();
+
+                }else {
+                    popOverlayOff();
+                    listModel = null;
+                    myAdapter.clearSelectedItems();
+                    myAdapter.notifyDataSetChanged();
+                }
             } else return false;
+
             return false;
         });
     }
@@ -180,6 +181,26 @@ public class MainActivity extends AppCompatActivity {
             myData.add(new MyItem(key, 1));
             myAdapter.notifyItemInserted(myData.size() - 1);
         }
+    }
+    public static void uploadSuggesst(){}
+    public static void returnSuggesst(){}
+    public void popOverlayOn(){
+        View popupOverlay = findViewById(R.id.popup_overlay);
+        popupOverlay.setVisibility(View.VISIBLE);
+        Button confirm = findViewById(R.id.popup_confirm);
+        confirm.setOnClickListener(v -> {
+            System.out.println("确认");
+        });
+        Button restart = findViewById(R.id.popup_restart);
+        restart.setOnClickListener(v -> {
+            System.out.println("重置");
+        });
+    }
+    public void popOverlayOff(){
+        View popupOverlay = findViewById(R.id.popup_overlay);
+        popupOverlay.setVisibility(View.GONE);
+        popupOverlay.findViewById(R.id.popup_confirm).setOnClickListener(null);
+        popupOverlay.findViewById(R.id.popup_restart).setOnClickListener(null);
     }
 }
 

@@ -91,6 +91,7 @@ public class API extends AsyncTask<Void, Void, String> {
             System.out.println("Service ID: " + service_id + "message:" + message);
 
             if (service_id.equals("return_food")) MainActivity.getFoodList(message);
+            if (service_id.equals("return_suggestion")) MainActivity.returnSuggesst();
         } catch (Exception e) {
             e.printStackTrace();
         }

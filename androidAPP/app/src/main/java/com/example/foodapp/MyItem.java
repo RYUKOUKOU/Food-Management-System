@@ -26,7 +26,11 @@ public class MyItem {
     public MyItem(String text, int shelfLife) {
         this.name = text;
         this.shelfLife = shelfLife;
-        this.imageResId = nameToImageMap.get(name);
+        try{
+            this.imageResId = nameToImageMap.get(name);
+        }catch (Exception e) {
+            System.out.println("食品名错误"+text);
+        }
         this.percent = 100;
     }
 
