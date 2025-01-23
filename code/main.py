@@ -8,6 +8,7 @@ import Args
 import os   
 import ImagePredict
 import cv2
+import useAndAi
 
 
 # 初始化 Flask 和 SocketIO
@@ -31,6 +32,7 @@ def update_message():
     service_id = data_dict.get('id')
     message = data_dict.get('message')
     #具体处理接收到的信息
+    # 上传图片
     if service_id == 'upload_img':
         file = request.files.get('file')
         if file:
@@ -43,8 +45,13 @@ def update_message():
             return jsonify({"id": "return_food", "message": json_data}), 200
         else:
             return jsonify({"id": "error", "message": "No file provided"}), 400
-    elif service_id == '101':
-        pass
+        
+        # 上传建议
+    elif service_id == 'upload_suggestion':
+        print(message)
+        result = useAndAi.chat_with_bot(message)
+        print(result)
+        return jsonify({"id": "return_suggestion", "message": result}), 200
 
     return jsonify({"id": "error", "message": "wrong service id"}), 200
         
