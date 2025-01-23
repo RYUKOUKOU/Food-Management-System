@@ -12,13 +12,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.MyViewHolder> {
 
-    private final List<MyItem> itemList;
+    private static List<MyItem> itemList = null;
     private String listModel = MainActivity.listModel;
+    private static List<Integer> selectedItems = new ArrayList<>();
 
     public MyImageTextAdapter(List<MyItem> itemList) {
         this.itemList = itemList;
@@ -39,14 +42,21 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
         holder.imageView.setImageResource(item.getImageResId());
         holder.circularProgressBar.setProgress(item.getPercent());
 
+        // 设置选中状态
+        if (selectedItems.contains(position)) {
+            holder.itemView.setBackground(new ColorDrawable(Color.parseColor("#d3d3d3")));
+        } else {
+            holder.itemView.setBackground(new ColorDrawable(Color.parseColor("#ffffff")));
+        }
+
         // 处理点击事件
         holder.itemView.setOnClickListener(v -> {
             listModel = MainActivity.listModel;
             System.out.println(listModel);
             if (Objects.equals(listModel, "suggestion")){
-                check(holder);
+                toggleSelection(holder, position);
             }else if(Objects.equals(listModel, "output")){
-                outputCheck(holder);
+                toggleSelection(holder, position);
             }
         });
 
@@ -84,15 +94,33 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
 
     }
 
-    public void check(MyViewHolder holder){
-        if (!holder.checked){
-            holder.checked = true;
-            holder.itemView.setBackground(new ColorDrawable(Color.parseColor("#d3d3d3")));
-        }else {
-            holder.checked = false;
+    // 切换选中状态
+    private void toggleSelection(MyViewHolder holder, int position) {
+        if (selectedItems.contains(position)) {
+            selectedItems.remove(Integer.valueOf(position));
             holder.itemView.setBackground(new ColorDrawable(Color.parseColor("#ffffff")));
+        } else {
+            selectedItems.add(position);
+            holder.itemView.setBackground(new ColorDrawable(Color.parseColor("#d3d3d3")));
         }
     }
+
+    public List<Integer> getSelectedItems() {
+        return selectedItems;
+    }
+    public void clearSelectedItems(){
+        selectedItems.clear();
+    }
+
+    // 确认操作（在外部调用这个方法来处理确认操作）
+    public static void confirmSelection() {
+        for (int position : selectedItems) {
+            MyItem item = itemList.get(position);
+            System.out.println("被选中item: " + item.getName());
+        }
+        selectedItems.clear();
+    }
+
     public void outputCheck(MyViewHolder holder){
         if (!holder.checked){
             holder.checked = true;

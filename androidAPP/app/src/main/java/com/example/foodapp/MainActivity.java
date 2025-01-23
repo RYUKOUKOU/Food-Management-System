@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
         // 导航栏按钮
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            recyclerView.setAdapter(myAdapter);
             int itemId = item.getItemId();
             if (itemId == R.id.nav_input) {
                 checkPermissions();
@@ -97,16 +98,16 @@ public class MainActivity extends AppCompatActivity {
 
                 return true;
             } else if (itemId == R.id.nav_suggestion) {
-                listModel = "suggestion";
-                System.out.println(listModel);
-                View popupOverlay = findViewById(R.id.popup_overlay);
-                if (popupOverlay.getVisibility() == View.GONE) {
-                    popupOverlay.setVisibility(View.VISIBLE);
-                } else {
-                    popupOverlay.setVisibility(View.GONE);
-                    recyclerView.setAdapter(myAdapter);
-                    listModel = null;
-                }
+                if (!Objects.equals(listModel, "suggestion")){
+                    listModel = "suggestion";
+                    System.out.println(listModel);
+                    View popupOverlay = findViewById(R.id.popup_overlay);
+                    if (popupOverlay.getVisibility() == View.GONE) {
+                        popupOverlay.setVisibility(View.VISIBLE);
+                    } else {
+                        popupOverlay.setVisibility(View.GONE);
+                    }
+                }else {MyImageTextAdapter.confirmSelection();}
             } else return false;
             return false;
         });
