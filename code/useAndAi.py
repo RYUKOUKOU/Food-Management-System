@@ -21,6 +21,6 @@ chat = model.start_chat(history=[
 
 def chat_with_bot(foodlist):
     food_str = ", ".join(foodlist)
-    user_message = f"以下の食材: {food_str} を使ってレシピを教えてください、ござるか？"
+    user_message = f"以下の食材: {food_str} を使ってレシピを教えてください、ござるか？使用した具体的な材料と調理方法をお知らせください。"
     response = chat.send_message(user_message)
     return response.text
