@@ -5,7 +5,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -43,8 +45,11 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
             System.out.println(listModel);
             if (Objects.equals(listModel, "suggestion")){
                 check(holder);
-            }else if(Objects.equals(listModel, "lock")){return;}
+            }else if(Objects.equals(listModel, "output")){
+                outputCheck(holder);
+            }
         });
+
     }
 
 
@@ -58,6 +63,11 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
         ImageView imageView;
         ProgressBar circularProgressBar;
         boolean checked;
+        Button btn_25;
+        Button btn_50;
+        Button btn_75;
+        Button btn_100;
+        LinearLayout button_container;
 
         MyViewHolder(View itemView) {
             super(itemView);
@@ -65,6 +75,11 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
             imageView = itemView.findViewById(R.id.item_image);
             circularProgressBar = itemView.findViewById(R.id.circularProgressBar);
             checked = false;
+            btn_25 = itemView.findViewById(R.id.btn_25);
+            btn_50 = itemView.findViewById(R.id.btn_50);
+            btn_75 = itemView.findViewById(R.id.btn_75);
+            btn_100 = itemView.findViewById(R.id.btn_100);
+            button_container = itemView.findViewById(R.id.button_container);
         }
 
     }
@@ -76,6 +91,17 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
         }else {
             holder.checked = false;
             holder.itemView.setBackground(new ColorDrawable(Color.parseColor("#ffffff")));
+        }
+    }
+    public void outputCheck(MyViewHolder holder){
+        if (!holder.checked){
+            holder.checked = true;
+            holder.itemView.setBackground(new ColorDrawable(Color.parseColor("#d3d3d3")));
+            holder.button_container.setVisibility(View.VISIBLE);
+        }else {
+            holder.checked = false;
+            holder.itemView.setBackground(new ColorDrawable(Color.parseColor("#ffffff")));
+            holder.button_container.setVisibility(View.GONE);
         }
     }
 }

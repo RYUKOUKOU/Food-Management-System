@@ -40,8 +40,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
-
         <!-- 百分比按鈕 -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -65,7 +63,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:visibility="visible"
+            android:visibility="gone"
             android:id="@+id/button_container">
 
 
