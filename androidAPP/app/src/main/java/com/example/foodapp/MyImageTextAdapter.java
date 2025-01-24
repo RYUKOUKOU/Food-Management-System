@@ -26,7 +26,7 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
     private static List<Integer> selectedItems = new ArrayList<>();
     protected static Map<String, String> buttonSelection = new HashMap<>();
     public MyImageTextAdapter(List<MyItem> itemList) {
-        this.itemList = itemList;
+        MyImageTextAdapter.itemList = itemList;
     }
 
     @NonNull
