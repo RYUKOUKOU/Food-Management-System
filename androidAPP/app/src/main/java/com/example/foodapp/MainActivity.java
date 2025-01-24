@@ -1,5 +1,7 @@
 package com.example.foodapp;
 
+import static com.example.foodapp.MyImageTextAdapter.buttonSelection;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -15,6 +17,7 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -36,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 
@@ -94,6 +98,17 @@ public class MainActivity extends AppCompatActivity {
                 checkPermissions();
                 return true;
             } else if (itemId == R.id.nav_output) {
+                if (!Objects.equals(listModel, "output")) {
+                    listModel = "output";
+                    TextView suggestText = findViewById(R.id.suggest_text);
+                    suggestText.setText("output mode");
+                    popOverlayOn();
+                }else {
+                    popOverlayOff();
+                    listModel = null;
+                    myAdapter.clearSelectedItems();
+                    myAdapter.notifyDataSetChanged();
+                }
                 new API("101", null, null).execute();
 
                 return true;
@@ -188,6 +203,16 @@ public class MainActivity extends AppCompatActivity {
         View popupOverlay = findViewById(R.id.popup_overlay);
         popupOverlay.setVisibility(View.VISIBLE);
         Button confirm = findViewById(R.id.popup_confirm);
+        if (Objects.equals(listModel, "output")) {
+            confirm.setOnClickListener(v -> {
+                if (buttonSelection != null){
+                    for(Map.Entry<String, String> entry : buttonSelection.entrySet()){
+
+                    }
+                }
+                System.out.println("輸出确认");
+            });
+        }
         confirm.setOnClickListener(v -> {
             System.out.println("确认");
         });

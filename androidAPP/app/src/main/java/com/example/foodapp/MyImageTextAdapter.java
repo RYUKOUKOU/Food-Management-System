@@ -14,7 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.MyViewHolder> {
@@ -22,7 +24,7 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
     private static List<MyItem> itemList = null;
     private String listModel = MainActivity.listModel;
     private static List<Integer> selectedItems = new ArrayList<>();
-
+    protected static Map<String, String> buttonSelection = new HashMap<>();
     public MyImageTextAdapter(List<MyItem> itemList) {
         this.itemList = itemList;
     }
@@ -39,6 +41,7 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
         MyItem item = itemList.get(position);
 
         holder.textView.setText(item.getName());
+        holder.textViewTime.setText(item.getShelfLife());
         holder.imageView.setImageResource(item.getImageResId());
         holder.circularProgressBar.setProgress(item.getPercent());
 
@@ -57,11 +60,38 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
                 toggleSelection(holder, position);
             }else if(Objects.equals(listModel, "output")){
                 toggleSelection(holder, position);
+                showButton(holder);
             }
+        });
+        //按鈕點擊事件
+        holder.btn_25.setOnClickListener(v -> {
+            handleButtonClick(holder, holder.btn_25, "25");
+            handleButtonClick(holder, item.getName(), "25");
+        });
+        holder.btn_50.setOnClickListener(v -> {
+            handleButtonClick(holder, holder.btn_50, "50");
+            handleButtonClick(holder, item.getName(), "50");
+        });
+        holder.btn_75.setOnClickListener(v -> {
+            handleButtonClick(holder, holder.btn_75, "75");
+            handleButtonClick(holder, item.getName(), "75");
+        });
+        holder.btn_100.setOnClickListener(v -> {
+            handleButtonClick(holder, holder.btn_100, "100");
+            handleButtonClick(holder, item.getName(), "100");
         });
 
     }
 
+    private void handleButtonClick(MyViewHolder holder, String objectName, String number) {
+        // 這裡記錄物件名稱與數字
+        System.out.println("物件名稱: " + objectName + ", 數字: " + number);
+
+        // 如果需要存到集合中
+        buttonSelection.put(objectName, number);
+        System.out.println(buttonSelection);
+        // 其他操作
+    }
 
     @Override
     public int getItemCount() {
@@ -70,6 +100,7 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
+        TextView textViewTime;
         ImageView imageView;
         ProgressBar circularProgressBar;
         boolean checked;
@@ -83,6 +114,7 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
             super(itemView);
             textView = itemView.findViewById(R.id.item_text);
             imageView = itemView.findViewById(R.id.item_image);
+            textViewTime = itemView.findViewById(R.id.item_time);
             circularProgressBar = itemView.findViewById(R.id.circularProgressBar);
             checked = false;
             btn_25 = itemView.findViewById(R.id.btn_25);
@@ -121,15 +153,41 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
         selectedItems.clear();
     }
 
-    public void outputCheck(MyViewHolder holder){
+    public void showButton(MyViewHolder holder){
         if (!holder.checked){
             holder.checked = true;
-            holder.itemView.setBackground(new ColorDrawable(Color.parseColor("#d3d3d3")));
             holder.button_container.setVisibility(View.VISIBLE);
         }else {
             holder.checked = false;
-            holder.itemView.setBackground(new ColorDrawable(Color.parseColor("#ffffff")));
             holder.button_container.setVisibility(View.GONE);
         }
     }
+    private void handleButtonClick(MyViewHolder holder, Button selectedButton, String value) {
+        // 取消所有按鈕的選中狀態（恢復樣式）
+        resetButtonStyles(holder);
+
+        // 設定當前按鈕為選中狀態
+        selectedButton.setBackgroundColor(Color.BLUE); // 或自定義選中背景
+        selectedButton.setTextColor(Color.WHITE);
+
+        // 處理選中邏輯，例如保存選中值
+        System.out.println();
+        System.out.println("選中值: " + value);
+    }
+    private void resetButtonStyles(MyViewHolder holder) {
+        // 恢復按鈕的初始樣式
+        holder.btn_25.setBackgroundColor(Color.LTGRAY); // 初始背景顏色
+        holder.btn_25.setTextColor(Color.BLACK);
+
+        holder.btn_50.setBackgroundColor(Color.LTGRAY);
+        holder.btn_50.setTextColor(Color.BLACK);
+
+        holder.btn_75.setBackgroundColor(Color.LTGRAY);
+        holder.btn_75.setTextColor(Color.BLACK);
+
+        holder.btn_100.setBackgroundColor(Color.LTGRAY);
+        holder.btn_100.setTextColor(Color.BLACK);
+    }
+
+
 }
