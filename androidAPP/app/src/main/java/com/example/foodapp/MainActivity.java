@@ -1,6 +1,7 @@
 package com.example.foodapp;
 
-import static com.example.foodapp.MyImageTextAdapter.buttonSelection;
+
+import static com.example.foodapp.MyImageTextAdapter.outputSelection;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -203,18 +204,14 @@ public class MainActivity extends AppCompatActivity {
         View popupOverlay = findViewById(R.id.popup_overlay);
         popupOverlay.setVisibility(View.VISIBLE);
         Button confirm = findViewById(R.id.popup_confirm);
-        if (Objects.equals(listModel, "output")) {
-            confirm.setOnClickListener(v -> {
-                if (buttonSelection != null){
-                    for(Map.Entry<String, String> entry : buttonSelection.entrySet()){
 
-                    }
-                }
-                System.out.println("輸出确认");
-            });
-        }
         confirm.setOnClickListener(v -> {
-            System.out.println("确认");
+            if (Objects.equals(listModel, "output")) {
+                outputSelection();
+                System.out.println("輸出确认");
+
+            }
+//            System.out.println("确认");
         });
         Button restart = findViewById(R.id.popup_restart);
         restart.setOnClickListener(v -> {

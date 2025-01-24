@@ -24,7 +24,7 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
     private static List<MyItem> itemList = null;
     private String listModel = MainActivity.listModel;
     private static List<Integer> selectedItems = new ArrayList<>();
-    protected static Map<String, String> buttonSelection = new HashMap<>();
+    protected static Map<String, String> buttonSelections = new HashMap<>();
     public MyImageTextAdapter(List<MyItem> itemList) {
         this.itemList = itemList;
     }
@@ -41,7 +41,7 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
         MyItem item = itemList.get(position);
 
         holder.textView.setText(item.getName());
-        holder.textViewTime.setText(item.getShelfLife());
+//        holder.textViewTime.setText(item.getShelfLife());
         holder.imageView.setImageResource(item.getImageResId());
         holder.circularProgressBar.setProgress(item.getPercent());
 
@@ -88,11 +88,29 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
         System.out.println("物件名稱: " + objectName + ", 數字: " + number);
 
         // 如果需要存到集合中
-        buttonSelection.put(objectName, number);
-        System.out.println(buttonSelection);
+        buttonSelections.put(objectName, number);
+        System.out.println(buttonSelections);
         // 其他操作
     }
+    public static void outputSelection() {
+        for (int position : selectedItems) {
+            MyItem item = itemList.get(position);
+            String itemName = item.getName();
+            if (buttonSelections.containsKey(itemName)){
+                //取得選取的數值
+                int value = new Integer(buttonSelections.get(itemName));
+                //更新百分比
+                int newPercent = item.getPercent() - value;
+                item.setPercent(newPercent);
 
+                System.out.println(item.getName());
+                System.out.println(item.getPercent() - value);
+            }
+        }
+    }
+    public static void updatePercent(MyViewHolder holder, int newPercent){
+        holder.circularProgressBar.setProgress(newPercent);
+    }
     @Override
     public int getItemCount() {
         return itemList.size();
@@ -160,8 +178,10 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
         }else {
             holder.checked = false;
             holder.button_container.setVisibility(View.GONE);
+
         }
     }
+
     private void handleButtonClick(MyViewHolder holder, Button selectedButton, String value) {
         // 取消所有按鈕的選中狀態（恢復樣式）
         resetButtonStyles(holder);
