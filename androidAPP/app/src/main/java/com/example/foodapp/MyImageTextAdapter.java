@@ -26,8 +26,9 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
     private static List<Integer> selectedItems = new ArrayList<>();
     protected static Map<String, String> buttonSelections = new HashMap<>();
     public MyImageTextAdapter(List<MyItem> itemList) {
-        MyImageTextAdapter.itemList = itemList;
+        this.itemList = itemList;
     }
+    private MyViewHolder holder;
 
     @NonNull
     @Override
@@ -39,9 +40,9 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         MyItem item = itemList.get(position);
-
+        this.holder = holder;
         holder.textView.setText(item.getName());
-//        holder.textViewTime.setText(item.getShelfLife());
+        holder.textViewTime.setText(item.getShelfLife());
         holder.imageView.setImageResource(item.getImageResId());
         holder.circularProgressBar.setProgress(item.getPercent());
 
@@ -167,6 +168,7 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
         for (int position : selectedItems) {
             MyItem item = itemList.get(position);
             System.out.println("被选中item: " + item.getName());
+            this.holder.button_container.setVisibility(View.GONE);
         }
         selectedItems.clear();
     }

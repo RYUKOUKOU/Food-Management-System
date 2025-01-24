@@ -43,7 +43,7 @@ public class MyItem {
         return imageResId;
     }
 
-    public int getShelfLife(){return shelfLife;}
+    public String getShelfLife(){return String.valueOf(shelfLife);}
 
     public  int getPercent(){ return percent;}
 
