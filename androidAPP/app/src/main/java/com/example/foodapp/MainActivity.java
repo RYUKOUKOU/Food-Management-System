@@ -21,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.WindowDecorActionBar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("StaticFieldLeak")
     private static MyImageTextAdapter myAdapter;
     public  static String listModel = null;
+    private static TextView suggestText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         myAdapter = new MyImageTextAdapter(myData);
         recyclerView.setAdapter(myAdapter);
+        suggestText = findViewById(R.id.suggest_text);
 
 
         // 通知按钮
@@ -101,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
             } else if (itemId == R.id.nav_output) {
                 if (!Objects.equals(listModel, "output")) {
                     listModel = "output";
-                    TextView suggestText = findViewById(R.id.suggest_text);
                     suggestText.setText("output mode");
                     popOverlayOn();
                 }else {
@@ -116,8 +118,8 @@ public class MainActivity extends AppCompatActivity {
             } else if (itemId == R.id.nav_suggestion) {
                 if (!Objects.equals(listModel, "suggestion")){
                     listModel = "suggestion";
+                    suggestText.setText("#使用したい食材を追加してください。もし追加しない場合は、システムが日付に基づいて優先的に食材をおすすめします。");
                     popOverlayOn();
-
                 }else {
                     popOverlayOff();
                     listModel = null;
@@ -198,8 +200,12 @@ public class MainActivity extends AppCompatActivity {
             myAdapter.notifyItemInserted(myData.size() - 1);
         }
     }
-    public static void uploadSuggesst(){}
-    public static void returnSuggesst(){}
+    public static void uploadSuggest(String msg){
+        new API("upload_suggestion",msg,null).execute();
+    }
+    public static void returnSuggest(String text){
+        setSuggestText(text);
+    }
     public void popOverlayOn(){
         View popupOverlay = findViewById(R.id.popup_overlay);
         popupOverlay.setVisibility(View.VISIBLE);
@@ -209,7 +215,9 @@ public class MainActivity extends AppCompatActivity {
             if (Objects.equals(listModel, "output")) {
                 outputSelection();
                 System.out.println("輸出确认");
-
+            }else if (Objects.equals(listModel, "suggestion")){
+                uploadSuggest(MyImageTextAdapter.getSelectedItems());
+                System.out.println("上传建议");
             }
 //            System.out.println("确认");
         });
@@ -223,6 +231,9 @@ public class MainActivity extends AppCompatActivity {
         popupOverlay.setVisibility(View.GONE);
         popupOverlay.findViewById(R.id.popup_confirm).setOnClickListener(null);
         popupOverlay.findViewById(R.id.popup_restart).setOnClickListener(null);
+    }
+    public static void setSuggestText(String Text){
+        suggestText.setText(Text);
     }
 }
 

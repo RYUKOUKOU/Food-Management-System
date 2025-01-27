@@ -48,9 +48,7 @@ def update_message():
         
         # 上传建议
     elif service_id == 'upload_suggestion':
-        print(message)
         result = useAndAi.chat_with_bot(message)
-        print(result)
         return jsonify({"id": "return_suggestion", "message": result}), 200
 
     return jsonify({"id": "error", "message": "wrong service id"}), 200

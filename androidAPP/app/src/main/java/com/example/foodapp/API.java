@@ -24,6 +24,7 @@ public class API extends AsyncTask<Void, Void, String> {
     @Override
     protected String doInBackground(Void... voids) {
         String requestBodyJson = "{\"id\":\"" + service_id + "\", \"message\":\"" + message + "\"}";
+        System.out.println(requestBodyJson);
         String boundary = "----WebKitFormBoundary" + UUID.randomUUID().toString().replaceAll("-", "");
         // 在这里执行你的网络请求代码
         String response = null;
@@ -91,7 +92,7 @@ public class API extends AsyncTask<Void, Void, String> {
             System.out.println("Service ID: " + service_id + "message:" + message);
 
             if (service_id.equals("return_food")) MainActivity.getFoodList(message);
-            if (service_id.equals("return_suggestion")) MainActivity.returnSuggesst();
+            if (service_id.equals("return_suggestion")) MainActivity.returnSuggest(message);
         } catch (Exception e) {
             e.printStackTrace();
         }

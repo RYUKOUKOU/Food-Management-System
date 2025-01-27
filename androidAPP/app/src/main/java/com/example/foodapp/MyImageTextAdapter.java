@@ -28,6 +28,7 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
     public MyImageTextAdapter(List<MyItem> itemList) {
         this.itemList = itemList;
     }
+    private String SuggesstText = "#選択された食材\n";
     private MyViewHolder holder;
 
     @NonNull
@@ -40,11 +41,13 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         MyItem item = itemList.get(position);
+
         this.holder = holder;
         holder.textView.setText(item.getName());
         holder.textViewTime.setText(item.getShelfLife());
         holder.imageView.setImageResource(item.getImageResId());
         holder.circularProgressBar.setProgress(item.getPercent());
+
 
         // 设置选中状态
         if (selectedItems.contains(position)) {
@@ -135,6 +138,7 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
             imageView = itemView.findViewById(R.id.item_image);
             textViewTime = itemView.findViewById(R.id.item_time);
             circularProgressBar = itemView.findViewById(R.id.circularProgressBar);
+            TextView suggestText = itemView.findViewById(R.id.suggest_text);
             checked = false;
             btn_25 = itemView.findViewById(R.id.btn_25);
             btn_50 = itemView.findViewById(R.id.btn_50);
@@ -150,14 +154,43 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
         if (selectedItems.contains(position)) {
             selectedItems.remove(Integer.valueOf(position));
             holder.itemView.setBackground(new ColorDrawable(Color.parseColor("#ffffff")));
+            String text = "";
+            for (Integer i : selectedItems) {
+                if (i >= 0 && i < itemList.size()) {
+                    MyItem item = itemList.get(i);
+                    text += item.getName() + " , ";
+                } else {
+                    System.out.println("Invalid index: " + i);
+                }
+            }
+            MainActivity.setSuggestText(SuggesstText+text);
         } else {
             selectedItems.add(position);
             holder.itemView.setBackground(new ColorDrawable(Color.parseColor("#d3d3d3")));
+            String text = "";
+            for (Integer i : selectedItems) {
+                if (i >= 0 && i < itemList.size()) {
+                    MyItem item = itemList.get(i);
+                    text += item.getName() + " , ";
+                } else {
+                    System.out.println("Invalid index: " + i);
+                }
+            }
+            MainActivity.setSuggestText(SuggesstText+text);
         }
     }
 
-    public List<Integer> getSelectedItems() {
-        return selectedItems;
+    public static String getSelectedItems() {
+        String text = "";
+        for (Integer i : selectedItems) {
+            if (i >= 0 && i < itemList.size()) {
+                MyItem item = itemList.get(i);
+                text += item.getName() + " , ";
+            } else {
+                System.out.println("Invalid index: " + i);
+            }
+        }
+        return text;
     }
     public void clearSelectedItems(){
         selectedItems.clear();
@@ -168,7 +201,7 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
         for (int position : selectedItems) {
             MyItem item = itemList.get(position);
             System.out.println("被选中item: " + item.getName());
-            this.holder.button_container.setVisibility(View.GONE);
+            //this.holder.button_container.setVisibility(View.GONE);
         }
         selectedItems.clear();
     }
