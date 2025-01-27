@@ -103,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             } else if (itemId == R.id.nav_output) {
                 if (!Objects.equals(listModel, "output")) {
+                    myAdapter.resetAllStates();
+                    myAdapter.resetButtonSelection();
                     listModel = "output";
                     suggestText.setText("output mode");
                     popOverlayOn();
@@ -215,6 +217,8 @@ public class MainActivity extends AppCompatActivity {
             if (Objects.equals(listModel, "output")) {
                 outputSelection();
                 System.out.println("輸出确认");
+                myAdapter.resetAllStates();
+                myAdapter.resetAllButtonStyles();
             }else if (Objects.equals(listModel, "suggestion")){
                 uploadSuggest(MyImageTextAdapter.getSelectedItems());
                 System.out.println("上传建议");

@@ -48,6 +48,8 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
         holder.imageView.setImageResource(item.getImageResId());
         holder.circularProgressBar.setProgress(item.getPercent());
 
+        // 設置按鈕容器的顯示/隱藏
+        showButton(holder, position);
 
         // 设置选中状态
         if (selectedItems.contains(position)) {
@@ -64,7 +66,7 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
                 toggleSelection(holder, position);
             }else if(Objects.equals(listModel, "output")){
                 toggleSelection(holder, position);
-                showButton(holder);
+                showButton(holder,position);
             }
         });
         //按鈕點擊事件
@@ -97,20 +99,43 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
         // 其他操作
     }
     public static void outputSelection() {
+        // 需要操作的物件列表
+        List<MyItem> itemsToRemove = new ArrayList<>();
+
         for (int position : selectedItems) {
             MyItem item = itemList.get(position);
             String itemName = item.getName();
-            if (buttonSelections.containsKey(itemName)){
-                //取得選取的數值
-                int value = new Integer(buttonSelections.get(itemName));
-                //更新百分比
-                int newPercent = item.getPercent() - value;
-                item.setPercent(newPercent);
 
-                System.out.println(item.getName());
-                System.out.println(item.getPercent() - value);
+            if (buttonSelections.containsKey(itemName)) {
+                // 取得選取的數值
+                int value = Integer.parseInt(buttonSelections.get(itemName));
+
+                // 计算新的百分比
+                int newPercent = item.getPercent() - value;
+
+                if (newPercent <= 0) {
+                    // 如果新百分比小於等於 0，將該物件加入待刪除列表
+                    itemsToRemove.add(item);
+                    System.out.println("Item removed: " + item.getName());
+                } else {
+                    // 更新百分比
+                    item.setPercent(newPercent);
+                    System.out.println(item.getName());
+                    System.out.println("Updated percent: " + newPercent);
+                }
             }
         }
+
+        // 删除所有百分比小於等於0的物件
+        for (MyItem item : itemsToRemove) {
+            itemList.remove(item);
+            // 从 selectedItems 中移除被删除项的位置
+            selectedItems.remove(Integer.valueOf(itemList.indexOf(item)));
+        }
+
+        // 清空按鈕選擇記錄
+        buttonSelections.clear();
+
     }
     public static void updatePercent(MyViewHolder holder, int newPercent){
         holder.circularProgressBar.setProgress(newPercent);
@@ -206,14 +231,11 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
         selectedItems.clear();
     }
 
-    public void showButton(MyViewHolder holder){
-        if (!holder.checked){
-            holder.checked = true;
-            holder.button_container.setVisibility(View.VISIBLE);
-        }else {
-            holder.checked = false;
-            holder.button_container.setVisibility(View.GONE);
-
+    public void showButton(MyViewHolder holder, int position) {
+        if (Objects.equals(listModel, "output") && selectedItems.contains(position)) {
+            holder.button_container.setVisibility(View.VISIBLE); // 顯示按鈕
+        } else {
+            holder.button_container.setVisibility(View.GONE); // 隱藏按鈕
         }
     }
 
@@ -243,6 +265,25 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
         holder.btn_100.setBackgroundColor(Color.LTGRAY);
         holder.btn_100.setTextColor(Color.BLACK);
     }
+    public void resetAllButtonStyles() {
+        for (int i = 0; i < itemList.size(); i++) {
+            notifyItemChanged(i); // 通知每個項目重新繪製，這會觸發 `onBindViewHolder`
+        }
 
-
+        // 清空按鈕選擇記錄
+        buttonSelections.clear();
+    }
+    public void resetAllStates() {
+        selectedItems.clear(); // 清空選中的項目
+        buttonSelections.clear(); // 清空按鈕選擇記錄
+        notifyDataSetChanged(); // 通知列表重新繪製
+    }
+    public void resetButtonSelection() {
+        buttonSelections.clear();  // 清除所有選中的按鈕記錄
+        for (int i = 0; i < itemList.size(); i++) {
+            MyItem item = itemList.get(i);
+            // 這樣保證在重新進入輸出模式時，按鈕不會處於選中狀態
+            notifyItemChanged(i);  // 通知每個項目重新繪製
+        }
+    }
 }
