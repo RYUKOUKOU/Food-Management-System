@@ -218,15 +218,19 @@ public class MainActivity extends AppCompatActivity {
                 outputSelection();
                 System.out.println("輸出确认");
                 myAdapter.resetAllStates();
-                myAdapter.resetAllButtonStyles();
+                myAdapter.resetButtonSelection();
             }else if (Objects.equals(listModel, "suggestion")){
                 uploadSuggest(MyImageTextAdapter.getSelectedItems());
                 System.out.println("上传建议");
             }
-//            System.out.println("确认");
         });
         Button restart = findViewById(R.id.popup_restart);
         restart.setOnClickListener(v -> {
+            if (Objects.equals(listModel, "output")) {
+                myAdapter.resetAllStates();
+                myAdapter.resetButtonSelection();
+                System.out.println("重置");
+            }
             System.out.println("重置");
         });
     }

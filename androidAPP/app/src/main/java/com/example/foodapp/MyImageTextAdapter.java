@@ -50,6 +50,7 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
 
         // 設置按鈕容器的顯示/隱藏
         showButton(holder, position);
+        resetButtonStyles(holder);
 
         // 设置选中状态
         if (selectedItems.contains(position)) {
@@ -265,14 +266,6 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
         holder.btn_100.setBackgroundColor(Color.LTGRAY);
         holder.btn_100.setTextColor(Color.BLACK);
     }
-    public void resetAllButtonStyles() {
-        for (int i = 0; i < itemList.size(); i++) {
-            notifyItemChanged(i); // 通知每個項目重新繪製，這會觸發 `onBindViewHolder`
-        }
-
-        // 清空按鈕選擇記錄
-        buttonSelections.clear();
-    }
     public void resetAllStates() {
         selectedItems.clear(); // 清空選中的項目
         buttonSelections.clear(); // 清空按鈕選擇記錄
@@ -282,7 +275,6 @@ public class MyImageTextAdapter extends RecyclerView.Adapter<MyImageTextAdapter.
         buttonSelections.clear();  // 清除所有選中的按鈕記錄
         for (int i = 0; i < itemList.size(); i++) {
             MyItem item = itemList.get(i);
-            // 這樣保證在重新進入輸出模式時，按鈕不會處於選中狀態
             notifyItemChanged(i);  // 通知每個項目重新繪製
         }
     }
