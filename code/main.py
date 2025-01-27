@@ -41,6 +41,8 @@ def update_message():
             json_data = json.dumps(ImagePredict.return_food_info(ImagePredict.predict(model,img),Args))
             #演示使用
             #ImagePredict.img_show(Args,img,ImagePredict.predict(model,img))
+            for key in json_data:
+                json_data[key] = Args.foodDate[key]
             os.remove(os.path.join(Args.path, "image.png"))
             return jsonify({"id": "return_food", "message": json_data}), 200
         else:

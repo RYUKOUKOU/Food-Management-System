@@ -6,6 +6,19 @@ class Args:
         self.model =['best.pt','last.pt']
         self.confidence_threshold = 0.1
 
+foodDate = {
+    'Apple': 21,  
+    'Banana': 7,  
+    'Broccoli': 3,
+    'Cabbage': 7, 
+    'Carrot': 14, 
+    'Cucumber': 7,
+    'Grape': 7,   
+    'Lemon': 21,  
+    'Orange': 21, 
+    'Potato': 30  
+}
+
 #选择通信时的操作码
 # upload_img. 上传图片并识别图片中的食物名称
 # return_food. 确认食物名称并返回食物信息

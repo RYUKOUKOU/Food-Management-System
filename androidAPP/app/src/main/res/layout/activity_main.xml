@@ -57,13 +57,19 @@
         android:visibility="gone"
         android:clickable="true">
 
-        <TextView
-            android:id="@+id/suggest_text"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:text="#使用したい食材を追加してください。もし追加しない場合は、システムが日付に基づいて優先的に食材をおすすめします。"
-            android:textSize="16sp"
-            android:background="#D3D3D3" />
+            android:layout_height="230dp"
+            android:background="#D3D3D3">
+
+            <TextView
+                android:id="@+id/suggest_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="#使用したい食材を追加してください。もし追加しない場合は、システムが日付に基づいて優先的に食材をおすすめします。"
+                android:textSize="16sp"
+                 />
+        </ScrollView>
         <!-- 弹窗内容 -->
         <LinearLayout
             android:id="@+id/custom_popup"
@@ -71,7 +77,8 @@
             android:layout_height="50dp"
             android:layout_gravity="bottom"
             android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center"
+            android:layout_alignTop="@id/suggest_text">
 
         <!-- 确认按钮，位于左边 -->
         <Button
