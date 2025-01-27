@@ -4,16 +4,16 @@
     <item
         android:id="@+id/nav_input"
         android:icon="@drawable/systeam_input"
-        android:title="输入" />
+        android:title="入力" />
 
     <item
         android:id="@+id/nav_suggestion"
         android:icon="@drawable/systeam_sug"
-        android:title="建议" />
+        android:title="提案" />
 
     <item
         android:id="@+id/nav_output"
         android:icon="@drawable/systeam_outout"
-        android:title="输出" />
+        android:title="出力" />
 
 </menu>
