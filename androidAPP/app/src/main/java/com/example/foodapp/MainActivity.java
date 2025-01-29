@@ -47,7 +47,7 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     public static String Server_url = "10.0.2.2";
-    public static String API_URL = "http://"+ Server_url + ":8000/api/upload_message";
+    public static String API_URL = "http://"+ Server_url + ":8000";
     private static final int CAMERA_REQUEST_CODE = 1;
     private String currentPhotoPath;
     private static ArrayList<MyItem> myData = null;
@@ -66,10 +66,10 @@ public class MainActivity extends AppCompatActivity {
         if (myData == null) {
             myData = new ArrayList<>();
             myData.add(new MyItem("Potato", 10));
-            myData.add(new MyItem("Cucumber", 7));
-            myData.add(new MyItem("Cabbage", 7));
-            myData.add(new MyItem("Broccoli", 5));
-            myData.add(new MyItem("Grape", 3));
+//            myData.add(new MyItem("Cucumber", 7));
+//            myData.add(new MyItem("Cabbage", 7));
+//            myData.add(new MyItem("Broccoli", 5));
+//            myData.add(new MyItem("Grape", 3));
         }
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
             String key = it.next();
             System.out.println("Key: " + key + ", Value: " + jsonObject.getInt(key));
 
-            myData.add(new MyItem(key, 1));
+            myData.add(new MyItem(key, jsonObject.getInt(key)));
             myAdapter.notifyItemInserted(myData.size() - 1);
         }
     }

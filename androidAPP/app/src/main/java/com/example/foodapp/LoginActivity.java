@@ -67,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void loginUser( String username, String password,String serverAddress) {
     Server_url = serverAddress;
-    API_URL = "http://"+ Server_url + ":8000/api/update_message";
+    API_URL = "http://"+ Server_url + ":8000";
     System.out.println(API_URL);
     new API("101", null, null).execute();
     }

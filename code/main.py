@@ -22,7 +22,7 @@ def index():
     return render_template('index.html')
 
 # 接收来自 Java 端的请求
-@main.route('/api/upload_message', methods=['POST'])
+@main.route('/', methods=['POST'])
 def update_message():
     data = request.form.get('data')
     if not data:
@@ -38,9 +38,11 @@ def update_message():
         if file:
             file.save(os.path.join(Args.path, "image.png"))
             img = cv2.imread(os.path.join(Args.path, "image.png"))
-            json_data = json.dumps(ImagePredict.return_food_info(ImagePredict.predict(model,img),Args))
+            json_data = (ImagePredict.return_food_info(ImagePredict.predict(model,img),Args))
             #演示使用
             #ImagePredict.img_show(Args,img,ImagePredict.predict(model,img))
+            if not json_data:
+                return jsonify({"error": "No data received"}), 400  # 回傳 400 Bad Request
             for key in json_data:
                 json_data[key] = Args.foodDate[key]
             os.remove(os.path.join(Args.path, "image.png"))
