@@ -40,7 +40,7 @@ def update_message():
             img = cv2.imread(os.path.join(Args.path, "image.png"))
             json_data = (ImagePredict.return_food_info(ImagePredict.predict(model,img),Args))
             #演示使用
-            #ImagePredict.img_show(Args,img,ImagePredict.predict(model,img))
+            ImagePredict.img_show(Args,img,ImagePredict.predict(model,img))
             if not json_data:
                 return jsonify({"error": "No data received"}), 400  # 回傳 400 Bad Request
             for key in json_data:

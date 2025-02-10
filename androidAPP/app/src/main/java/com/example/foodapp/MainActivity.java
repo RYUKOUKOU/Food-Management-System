@@ -65,9 +65,9 @@ public class MainActivity extends AppCompatActivity {
         // 设置 RecyclerView
         if (myData == null) {
             myData = new ArrayList<>();
-            myData.add(new MyItem("Potato", 10));
-//            myData.add(new MyItem("Cucumber", 7));
-//            myData.add(new MyItem("Cabbage", 7));
+//            myData.add(new MyItem("Potato", 10));
+            myData.add(new MyItem("Cucumber", 7));
+            myData.add(new MyItem("Cabbage", 7));
 //            myData.add(new MyItem("Broccoli", 5));
 //            myData.add(new MyItem("Grape", 3));
         }
